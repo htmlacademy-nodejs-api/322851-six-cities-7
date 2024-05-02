@@ -14,14 +14,17 @@
     "lint": "eslint src/ --ext .ts",
     "compile": "tsc -p tsconfig.json",
     "clean": "rimraf dist",
-    "ts": "tsc --noEmit && node --no-warnings=--no-warnings=ExperimentalWarning --loader ts-node/esm"
+    "ts": "tsc --noEmit && node --no-warnings=--no-warnings=ExperimentalWarning --loader ts-node/esm",
+    "mock:server": "json-server ./mocks/mock-server-data.json --port 3123 --host localhost"
   },
   "devDependencies": {
+    "@faker-js/faker": "8.4.1",
     "@types/node": "20.12.7",
     "@typescript-eslint/eslint-plugin": "6.7.0",
     "@typescript-eslint/parser": "6.7.0",
     "eslint": "8.49.0",
     "eslint-config-htmlacademy": "9.1.1",
+    "json-server": "0.17.3",
     "rimraf": "5.0.1",
     "ts-node": "10.9.2",
     "typescript": "5.4.5"
@@ -33,5 +36,8 @@
   },
   "volta": {
     "node": "20.12.2"
+  },
+  "dependencies": {
+    "dayjs": "1.11.11"
   }
 }
