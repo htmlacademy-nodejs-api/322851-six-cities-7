@@ -1,5 +1,4 @@
 export type MockServerData = {
-    api: {
         titles: string[];
         descriptions: string[];
         previewImages: string[];
@@ -8,5 +7,4 @@ export type MockServerData = {
         emails: string[];
         passwords: string[];
         avatars: string[];
-    }
 }

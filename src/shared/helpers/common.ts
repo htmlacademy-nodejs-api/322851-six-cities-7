@@ -20,6 +20,8 @@ const generateRandomIndex = (a: number, b: number) => {
   };
 };
 
+const getRanndomElement = <T>(arr: T[]) => arr[getRandomInteger(0, arr.length - 1)];
+
 const getRandomSubArray = <T>(arr: T[], count?: number) => {
   count = (!count) ? getRandomInteger(1, arr.length - 1) : count;
   const newArray: T[] = [];
@@ -35,5 +37,6 @@ const getRandomSubArray = <T>(arr: T[], count?: number) => {
 
 export {
   getRandomInteger,
-  getRandomSubArray
+  getRandomSubArray,
+  getRanndomElement
 };

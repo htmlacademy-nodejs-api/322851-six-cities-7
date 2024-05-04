@@ -4,6 +4,7 @@ import { Offer } from '../types/offer.type.js';
 import { City } from '../types/city.type.js';
 import { Location } from '../types/location.type.js';
 import { User } from '../types/user.type.js';
+import dayjs from 'dayjs';
 
 export class TSVFileReader implements FileReader {
   private rawData = '';
@@ -51,15 +52,16 @@ export class TSVFileReader implements FileReader {
       email,
       isPro,
       avatar,
-      comments
+      comments,
+      date
     ] = line.split('\t');
 
     return {
       id,
       title,
       description,
-      date: Date.now(),
       city: this.parseCity(cityName, cityLatitude, cityLongitude, cityZoom),
+      date: (date) ? date : dayjs().toISOString(),
       previewImage,
       images: images.split(';'),
       isFavorite: this.parseBoolean(isFavorite),
@@ -84,6 +86,7 @@ export class TSVFileReader implements FileReader {
   }
 
   private parseLocation(latitude: string, longitude: string, zoom: string): Location {
+    console.log(latitude, longitude);
     return {
       latitude: parseFloat(latitude),
       longitude: parseFloat(longitude),
