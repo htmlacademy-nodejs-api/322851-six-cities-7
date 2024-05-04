@@ -1,9 +1,9 @@
-import { appendFile } from 'node:fs/promises';
 import { TSVOfferGenerator } from '../../shared/libs/tsv-offer-generator.js';
 import { MockServerData } from '../../shared/types/mock-server-data.type.js';
 import { Command } from './command.interface.js';
 import got from 'got';
 import chalk from 'chalk';
+import { TSVFileWriter } from '../../shared/libs/tsv-file-writer.js';
 
 export class GenerateCommand implements Command {
   private initialData: MockServerData;
@@ -18,8 +18,10 @@ export class GenerateCommand implements Command {
 
   private async write(filepath: string, offerCount: number) {
     const offerGenerator = new TSVOfferGenerator(this.initialData);
+    const fileWriter = new TSVFileWriter(filepath);
+
     for (let i = 0; i < offerCount; i++) {
-      await appendFile(filepath, `${offerGenerator.generate()}\n`, { encoding: 'utf8' });
+      fileWriter.write(offerGenerator.generate());
     }
   }
 

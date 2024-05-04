@@ -60,7 +60,8 @@ const Setting = {
   MINRAITING: 1,
   OFFER_IMAGES_COUNT: 6,
   MAX_COMMENTS_VALUE: 50,
-  OFFER_LOCATION_ZOOM: 16
+  OFFER_LOCATION_ZOOM: 16,
+  CHUNK_SIZE: 16384
 } as const;
 
 const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'];
