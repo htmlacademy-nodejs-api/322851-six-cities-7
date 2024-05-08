@@ -1,10 +1,8 @@
-import { TSVOfferGenerator } from '../../shared/libs/tsv-offer-generator.js';
+import { TSVOfferGenerator, TSVFileWriter } from '../../shared/libs/index.js';
 import { MockServerData } from '../../shared/types/mock-server-data.type.js';
 import { Command } from './command.interface.js';
 import got from 'got';
 import chalk from 'chalk';
-import { TSVFileWriter } from '../../shared/libs/tsv-file-writer.js';
-
 export class GenerateCommand implements Command {
   private initialData: MockServerData;
 

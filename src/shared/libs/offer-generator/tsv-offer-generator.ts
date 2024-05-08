@@ -1,6 +1,6 @@
-import { OFFER_GOODS, OFFER_TYPES, Setting, SixCities } from '../const.js';
-import { getRandomInteger, getRandomSubArray, getRanndomElement } from '../helpers/common.js';
-import { MockServerData } from '../types/mock-server-data.type.js';
+import { OFFER_GOODS, OFFER_TYPES, Setting, SixCities } from '../../const.js';
+import { getRandomInteger, getRandomSubArray, getRanndomElement } from '../../helpers/common.js';
+import { MockServerData } from '../../types/mock-server-data.type.js';
 import { OfferGenerator } from './offer-generator.interface.js';
 import { faker } from '@faker-js/faker';
 import dayjs from 'dayjs';
