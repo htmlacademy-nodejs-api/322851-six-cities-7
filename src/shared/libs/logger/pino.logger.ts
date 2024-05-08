@@ -13,7 +13,7 @@ export class PinoLogger implements Logger {
           options: {}
         }
       ]
-    })
+    });
     this.logger = pino({}, multiTransport);
   }
 
