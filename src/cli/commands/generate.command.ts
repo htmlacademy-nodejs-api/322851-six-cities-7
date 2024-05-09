@@ -1,5 +1,5 @@
 import { TSVOfferGenerator, TSVFileWriter } from '../../shared/libs/index.js';
-import { MockServerData } from '../../shared/types/mock-server-data.type.js';
+import { MockServerData } from '../../shared/types/index.js';
 import { Command } from './command.interface.js';
 import got from 'got';
 import chalk from 'chalk';
