@@ -1,11 +1,8 @@
 import { FileReader } from './file-reader.interface.js';
 import { createReadStream } from 'node:fs';
-import { Offer } from '../types/offer.type.js';
-import { City } from '../types/city.type.js';
-import { Location } from '../types/location.type.js';
-import { User } from '../types/user.type.js';
+import { Offer, City, Location, User } from '../../types/index.js';
 import dayjs from 'dayjs';
-import { Setting } from '../const.js';
+import { Setting } from '../../const.js';
 import { EventEmitter } from 'node:events';
 
 export class TSVFileReader extends EventEmitter implements FileReader {

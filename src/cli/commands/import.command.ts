@@ -1,7 +1,7 @@
 import { Command } from './command.interface.js';
-import { TSVFileReader } from '../../shared/libs/tsv-file-reader.js';
+import { TSVFileReader } from '../../shared/libs/file-reader/tsv-file-reader.js';
 import chalk from 'chalk';
-import { Offer } from '../../shared/types/offer.type.js';
+import { Offer } from '../../shared/types/index.js';
 
 export class ImportCommand implements Command {
 
