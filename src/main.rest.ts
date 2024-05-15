@@ -1,6 +1,6 @@
 import { Container } from 'inversify';
 import 'reflect-metadata';
-import { PinoLogger, RestConfig, Logger, Config, RestSchema } from './shared/libs/index.js';
+import { PinoLogger, RestConfig, Logger, Config, RestSchema, DatabaseClient, MongoDatabaseClient } from './shared/libs/index.js';
 import { RestApplication } from './rest/rest.application.js';
 import { Component } from './shared/types/index.js';
 
@@ -9,6 +9,7 @@ async function bootstrap() {
   container.bind<RestApplication>(Component.RestApplication).to(RestApplication).inSingletonScope();
   container.bind<Logger>(Component.Logger).to(PinoLogger).inSingletonScope();
   container.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
+  container.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
   const application = container.get<RestApplication>(Component.RestApplication);
 
   await application.init();
