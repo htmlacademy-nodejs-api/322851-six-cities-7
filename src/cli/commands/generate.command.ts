@@ -3,6 +3,7 @@ import { MockServerData } from '../../shared/types/index.js';
 import { Command } from './command.interface.js';
 import got from 'got';
 import chalk from 'chalk';
+import { getErrorMessage } from '../../shared/helpers/index.js';
 export class GenerateCommand implements Command {
   private initialData: MockServerData;
 
@@ -37,7 +38,7 @@ export class GenerateCommand implements Command {
       console.error('Can\'t generate data');
 
       if (error instanceof Error) {
-        console.error(error.message);
+        console.error(getErrorMessage(error));
       }
     }
   }

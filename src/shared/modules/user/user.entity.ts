@@ -1,36 +1,34 @@
 import { defaultClasses, getModelForClass, modelOptions, prop } from '@typegoose/typegoose';
 import { User } from '../../types/index.js';
-import { Types } from 'mongoose';
 import { createSHA256 } from '../../helpers/hash.js';
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export interface UserEntity extends defaultClasses.Base {}
 
 
 @modelOptions({
   schemaOptions: {
     collection: 'users',
-    timestamps: true
+    timestamps: true,
+    id: true
   }
 })
-export class UserEntity extends defaultClasses.TimeStamps implements User, defaultClasses.Base {
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+export class UserEntity extends defaultClasses.TimeStamps implements Omit<User, 'password'> {
   @prop({unique: true, required: true})
   public email: string;
 
   @prop({required: true, default: ''})
   private password?: string;
 
-  @prop({required: true, default: ''})
-  public avatar?: string | undefined;
+  @prop({default: ''})
+  public avatar?: string;
 
   @prop({required: true})
   public name: string;
 
   @prop({required: true})
   public isPro: boolean;
-
-  @prop({required: true})
-  public id: string;
-
-  @prop({required: true})
-  public _id: Types.ObjectId;
 
   constructor(userData: User) {
     super();
@@ -45,8 +43,10 @@ export class UserEntity extends defaultClasses.TimeStamps implements User, defau
     return this.password;
   }
 
-  public setPassword(password: string, salt: string) {
-    this.password = createSHA256(password, salt);
+  public setPassword(password: string | undefined, salt: string) {
+    if (password) {
+      this.password = createSHA256(password, salt);
+    }
   }
 
 }

@@ -7,7 +7,6 @@ import { setTimeout } from 'node:timers/promises';
 
 @injectable()
 export class MongoDatabaseClient implements DatabaseClient {
-  private mongoose: typeof Mongoose;
   private isConnected: boolean;
 
   constructor(
@@ -29,7 +28,7 @@ export class MongoDatabaseClient implements DatabaseClient {
     while (attempt <= DatabaseSetting.RETRY_COUNT) {
       try {
         this.logger.info(`Trying to connect to MongoDB. Attempt ${attempt}`);
-        this.mongoose = await Mongoose.connect(uri);
+        await Mongoose.connect(uri);
         this.isConnected = true;
         this.logger.info('Connection to MongoDb established');
         return;

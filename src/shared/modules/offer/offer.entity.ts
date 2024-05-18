@@ -1,22 +1,14 @@
 import { ModelOptions, Ref, defaultClasses, getModelForClass, prop } from '@typegoose/typegoose';
-import { Location } from '../../types/index.js';
-import { Types } from 'mongoose';
 import { CityEntity } from '../city/index.js';
 import { UserEntity } from '../user/index.js';
-
-
 @ModelOptions({
   schemaOptions: {
     collection: 'offers',
-    timestamps: true
+    timestamps: true,
+    _id: true
   }
 })
-export class OfferEntity extends defaultClasses.TimeStamps implements defaultClasses.Base {
-  @prop({required: true})
-  public id: string;
-
-  @prop({required: true})
-  public _id: Types.ObjectId;
+export class OfferEntity extends defaultClasses.TimeStamps {
 
   @prop({required: true, trim: true})
   public title: string;
@@ -33,7 +25,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements defaultCla
   @prop({required: true, trim: true})
   public previewImage: string;
 
-  @prop({required: true})
+  @prop({required: true, type: () => String})
   public images: string[];
 
   @prop({required: true})
@@ -51,7 +43,7 @@ export class OfferEntity extends defaultClasses.TimeStamps implements defaultCla
   @prop({required: true})
   public maxAdults: number;
 
-  @prop({required: true, ref: UserEntity})
+  @prop({required: true, ref: UserEntity, _id: false})
   public host: Ref<UserEntity>;
 
   @prop({required: true, trim: true})
@@ -60,11 +52,17 @@ export class OfferEntity extends defaultClasses.TimeStamps implements defaultCla
   @prop({required: true})
   public price: number;
 
-  @prop({required: true})
+  @prop({required: true, type: () => String})
   public goods: string[];
 
   @prop({required: true})
-  public location: Location;
+  public offerLongitude: number;
+
+  @prop({required: true})
+  public offerLatitude: number;
+
+  @prop({required: true})
+  public offerZoom: number;
 
   @prop({required: true})
   public comments: number;

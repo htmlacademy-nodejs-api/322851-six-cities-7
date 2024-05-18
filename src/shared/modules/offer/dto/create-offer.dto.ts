@@ -1,8 +1,4 @@
-import { City, Location, User } from '../../../types/index.js';
-
 export class CreateOfferDto {
-
-  public id: string;
 
   public title: string;
 
@@ -13,7 +9,7 @@ export class CreateOfferDto {
   public date: string;
 
 
-  public city: City;
+  public city: string;
 
 
   public previewImage: string;
@@ -37,7 +33,7 @@ export class CreateOfferDto {
   public maxAdults: number;
 
 
-  public host: User;
+  public host: string;
 
 
   public type: string;
@@ -49,7 +45,11 @@ export class CreateOfferDto {
   public goods: string[];
 
 
-  public location: Location;
+  public offerLatitude: number;
+
+  public offerLongitude: number;
+
+  public offerZoom: number;
 
 
   public comments: number;

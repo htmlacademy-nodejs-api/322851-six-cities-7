@@ -8,3 +8,4 @@ export { Config } from './config/config.interface.js';
 export { RestSchema, configRestSchema } from './config/rest.schema.js';
 export { DatabaseClient } from './database-client/database-client.interface.js';
 export { MongoDatabaseClient } from './database-client/mongo.database-client.js';
+export { ConsoleLogger } from './logger/console.logger.js';

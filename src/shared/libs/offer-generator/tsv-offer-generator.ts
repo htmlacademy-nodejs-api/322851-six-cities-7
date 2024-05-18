@@ -11,7 +11,6 @@ export class TSVOfferGenerator implements OfferGenerator {
   ) {}
 
   generate(): string {
-    const id = faker.database.mongodbObjectId();
     const title = getRanndomElement(this.mockData.titles);
     const description = getRanndomElement(this.mockData.descriptions);
     const date = dayjs(faker.date.recent()).toISOString();
@@ -41,7 +40,6 @@ export class TSVOfferGenerator implements OfferGenerator {
     } ;
 
     return [
-      id,
       title,
       type,
       price,

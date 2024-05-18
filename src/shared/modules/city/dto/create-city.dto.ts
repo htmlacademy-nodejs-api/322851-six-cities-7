@@ -1,6 +1,7 @@
-import { Location } from '../../../types/index.js';
 
 export class CreateCityDto {
   public name: string;
-  public location: Location;
+  public cityLatitude: number;
+  public cityLongitude: number;
+  public cityZoom: number;
 }

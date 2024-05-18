@@ -9,7 +9,7 @@ services:
     ports:
       - ${DB_PORT}:27017
     volumes:
-      - six-cities:/data/db
+      - six-cities_data:/data/db
 
   db_ui:
     image: mongo-express:1.0.2-20

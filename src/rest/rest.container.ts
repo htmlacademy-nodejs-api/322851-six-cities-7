@@ -4,7 +4,8 @@ import { Component } from '../shared/types/index.js';
 import {
   Config,
   DatabaseClient,
-  Logger, MongoDatabaseClient,
+  Logger,
+  MongoDatabaseClient,
   PinoLogger,
   RestConfig,
   RestSchema

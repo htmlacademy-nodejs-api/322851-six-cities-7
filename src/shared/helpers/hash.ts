@@ -5,4 +5,4 @@ const createSHA256 = (password: string, salt: string): string => crypto.createHm
 
 export {
   createSHA256
-}
+};

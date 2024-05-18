@@ -66,7 +66,8 @@ const Setting = {
 
 enum DatabaseSetting {
   RETRY_COUNT = 5,
-  RETRY_TIMEOUT = 1000
+  RETRY_TIMEOUT = 1000,
+  DEFAULT_DB_PORT = '27017'
 }
 
 const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'];
