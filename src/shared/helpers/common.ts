@@ -35,8 +35,12 @@ const getRandomSubArray = <T>(arr: T[], count?: number) => {
   return newArray;
 };
 
+const getErrorMessage = (error: unknown) => (error instanceof Error) ? error.message : '';
+
+
 export {
   getRandomInteger,
   getRandomSubArray,
-  getRanndomElement
+  getRanndomElement,
+  getErrorMessage
 };

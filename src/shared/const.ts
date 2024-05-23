@@ -64,6 +64,12 @@ const Setting = {
   CHUNK_SIZE: 16384
 } as const;
 
+enum DatabaseSetting {
+  RETRY_COUNT = 5,
+  RETRY_TIMEOUT = 1000,
+  DEFAULT_DB_PORT = '27017'
+}
+
 const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'];
 const OFFER_GOODS = ['Breakfast, Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'];
 
@@ -71,5 +77,6 @@ export {
   SixCities,
   OFFER_TYPES,
   OFFER_GOODS,
-  Setting
+  Setting,
+  DatabaseSetting
 };

@@ -16,7 +16,6 @@ export class TSVFileReader extends EventEmitter implements FileReader {
 
   private parseLineToOffer(line: string): Offer {
     const [
-      id,
       title,
       type,
       price,
@@ -45,8 +44,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       date
     ] = line.split('\t');
 
+    const { longitude, latitude, zoom } = this.parseLocation(offerLatitude, offerLongitude, offerZoom);
+
     return {
-      id,
       title,
       description,
       city: this.parseCity(cityName, cityLatitude, cityLongitude, cityZoom),
@@ -63,14 +63,19 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       goods: goods.split(','),
       host: this.parseUser(userName, password, email, isPro, avatar),
       comments: parseInt(comments, 10),
-      location: this.parseLocation(offerLatitude, offerLongitude, offerZoom)
+      offerLatitude: latitude,
+      offerLongitude: longitude,
+      offerZoom: zoom
     };
   }
 
   private parseCity(cityName: string, cityLatitude: string, cityLongitude: string, cityZoom: string): City {
+    const {longitude, latitude, zoom } = this.parseLocation(cityLatitude, cityLongitude, cityZoom);
     return {
       name: cityName,
-      location: this.parseLocation(cityLatitude, cityLongitude, cityZoom)
+      cityLatitude: latitude,
+      cityLongitude: longitude,
+      cityZoom: zoom
     };
   }
 
@@ -89,7 +94,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
   private parseUser(name: string, password: string, email: string, isPro:string, avatar: string): User {
     return {
       name,
-      password,
+      password: password,
       email,
       isPro: this.parseBoolean(isPro),
       avatar: avatar ?? null
@@ -115,7 +120,11 @@ export class TSVFileReader extends EventEmitter implements FileReader {
 
         const parsedOffer = this.parseLineToOffer(line);
 
-        this.emit('line', parsedOffer);
+
+        await new Promise((resolve) => {
+          this.emit('line', parsedOffer, resolve);
+        });
+
       }
     }
 

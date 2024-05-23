@@ -1,9 +1,7 @@
 import { User } from './user.type.js';
 import { City } from './city.type.js';
-import { Location } from './location.type.js';
 
 export type Offer = {
-  id: string;
   title: string;
   description: string;
   date: string;
@@ -20,7 +18,9 @@ export type Offer = {
   goods: string[];
   host: User;
   comments: number;
-  location: Location;
+  offerLatitude: number;
+  offerLongitude: number;
+  offerZoom: number;
 };
 
 
