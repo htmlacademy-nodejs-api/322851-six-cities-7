@@ -1,0 +1,764 @@
+openapi: 3.0.0
+info:
+  title: API сервер для проекта "Six cities".
+  description: |-
+    * список ресурсов и маршрутов сервера "Six cities".
+  license:
+      name: MIT
+      url: https://opensource.org/licenses/MIT
+  version: 1.0.0
+
+tags:
+  - name: offers
+    description: Действия с объявлениями
+  - name: users
+    description: Действия с пользователем
+  - name: comments
+    description: Действия с комментариями
+
+paths:
+  /register:
+    post:
+      tags:
+        - users
+      summary: Регистрация пользователя
+      description: Регистрирует нового пользователя
+
+      requestBody:
+        description: Информация для создания нового пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/createUser'
+        required: true
+
+      responses:
+        '201':
+          description: Пользователь зарегистрирован. Объект пользователя.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        '409':
+          description: Пользователь с таким email уже существует.
+
+  /login:
+    post:
+      tags:
+        - users
+      summary: Авторизация пользователя
+      description: Авторизует пользователя на основе логина и пароля.
+
+      requestBody:
+        description: Информация для авторизации пользователя
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/authUser'
+        required: true
+
+      responses:
+        '200':
+          description: Пользователь успешно авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        '401':
+          description: Ошибка авторизации пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authError'
+                
+        '400':
+          description: Введены неверные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError'
+
+    get:
+      tags:
+        - users
+      summary: Проверка состояния пользователя
+      description: Возвращает информацию по состоянию авторизовации пользователя на основе сессионного токена.
+
+      parameters:
+        - in: 'header'
+          name: Токен пользователя
+          schema:
+             $ref: '#/components/schemas/token'
+          required: true
+
+
+      responses:
+        '200':
+          description: Пользователь успешно авторизован.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+
+        '401':
+          description: Ошибка авторизации пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authError'
+
+  /logout:
+    post:
+      tags:
+        - users
+      summary: Завершение пользовательского сеанса
+      description: Осуществляет завершение пользовательского сеанса и выход из закртыой части приложения.
+
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+
+      responses:
+        '204':
+          description: Сеанс завершён
+
+
+  /comments/{offerId}:
+    get:
+      tags:
+        - comments
+      summary: Получение списка комментариев
+      description: Возвращает список из 50 (или меньше) последних комментариев для конкретного предложения на основе offerId
+
+      parameters:
+      - name: 'offerId'
+        in: path
+        schema:
+          $ref: '#/components/schemas/offerId'
+        required: true
+
+
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comments'
+
+        '404':
+          description: Предложение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFoundError'
+
+
+    post:
+      tags:
+          - comments
+      summary: Добавление нового комментария
+      description: Добавляет новый комментарий от авторизованного пользователя для конкретного предложения на основе offerId
+      
+      parameters:
+      - name: 'offerId'
+        in: path
+        schema:
+          $ref: '#/components/schemas/offerId'
+        required: true
+        
+      requestBody:
+        description: Новый объект комментария
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newComment'
+        required: true
+        
+      responses:
+        '200':
+          description: Успешное добавление коментария
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/comment'
+                
+        '400':
+          description: Введены неверные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError'
+                
+        '401':
+          description: В доступе отказано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authError'
+        
+        '404':
+          description: Предложение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFoundError'
+        
+  /offers:
+    get:
+      tags:
+        - offers
+      summary: Получение списка предложений по аренде
+      description: Возвращает не больше 60 предложений, отсортированных по дате публикации (по убыванию)
+      
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+      
+      responses:
+        '200':
+          description: Список предложений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offers'
+
+    post:
+      tags:
+        - offers
+      summary: Добавление нового предложения по аренде
+      description: Добавляет новое предложение по аренде от авторизованного пользователя.
+      
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+      
+      requestBody:
+        description: Объект с новым предложением по аренде
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newOffer'
+        required: true
+        
+      responses:
+        '201':
+          description: Новое предложений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+                
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError' 
+                
+        '401':
+          description:  В доступе отказано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authError'
+                
+  /offers/{offerId}:
+    get:
+      tags:
+        - offers
+      summary: Получение информации о предложении по аренде
+      description: Предоставляет детальную информацию по конкретному предложению на основе offerId.
+      
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'offerId'
+          in: path
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+      
+      responses:
+        '201':
+          description: Объект предложения
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+                
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError' 
+      
+        '404':
+          description: Предложение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFoundError'
+                
+    post:
+      tags:
+        - offers
+      summary: Редактирование предложения по аренде
+      description: Редактирует существующее предложение авторизованного пользователя  на основе offerId.
+      
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'offerId'
+          in: path
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+      
+      requestBody:
+        description: Объект с отредактированным предложением по аренде
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/newOffer'
+        required: true
+        
+      responses:
+        '201':
+          description: Новое предложений
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offer'
+                
+        '400':
+          description: Неверные данныеи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/validationError' 
+        
+        '401':
+          description:  В доступе отказано
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authError'
+        
+        '404':
+          description: Предложение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFoundError'
+      
+    delete:
+      tags:
+        - offers
+      summary: Удаление предложения по аренде
+      description: Удаляет существующее предложение авторизованного пользователя  на основе offerId.
+      
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'offerId'
+          in: path
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+          
+      responses:
+        '204':
+          description: Предложение по аренде успешно удалено
+          
+                
+        '404':
+          description: Предложение не найдено
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/offerNotFoundError'
+      
+
+  /favorites:
+    get:
+        tags:
+          - offers
+        summary: Список избранных предложений
+        description: Возвращает все предложения, добавленные в избранное конкретным пользователем на основе сессионного токена.
+        parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+      
+        responses:
+          '201':
+            description: Список предложений
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/offers'
+                  
+          '401':
+            description:  В доступе отказано
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authError'
+                  
+  /favorites/{offerId}/{status}:
+    post:
+        tags:
+          - offers
+        summary: Добавление и удаление предложения в/из избранного
+        description: Добавляет и удаляет предложение в/из избранного авторизованным пользователем offerId и status.
+        parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - in: path
+          name: offerId
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+        - in: path
+          name: status
+          schema:
+            type: string
+            example: 1
+          required: true
+          
+        responses:
+          '201':
+            description: Новое предложений
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/offer'
+                  
+          '400':
+            description: Неверный статус
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/validationError' 
+        
+          '401':
+            description:  В доступе отказано
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/authError'
+          
+          '404':
+            description: Предложение не найдено
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/offerNotFoundError'
+        
+  /premiumOffers/{cityName}:
+    get:
+        tags:
+          - offers
+        summary: Премиальные предложения для города
+        description: Возвращает не больше 3 предложений с флагом «Premium» для конкретного города основе cityName.
+        parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: false
+        - in: path
+          name: cityName
+          schema:
+            type: string
+            example: Paris
+          required: true
+          
+        responses:
+          '201':
+            description: Список предложений
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/offers'
+                  
+          '404':
+            description: Город не найден
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/validationError'
+
+components:
+  schemas:
+    createUser:
+      type: object
+
+      properties:
+        login:
+          type: string
+          example: Max
+
+        email:
+          type: string
+          example: max@mail.ru
+
+        password:
+          type: string
+          example: qwerty
+
+    authUser:
+      type: object
+
+      properties:
+        email:
+          type: string
+          example: max@mail.ru
+
+        password:
+          type: string
+          example: qwerty
+
+    authError:
+      type: object
+
+      properties:
+        errorType:
+          type: string
+          example: COMMON_ERROR
+
+        message:
+          type: string
+          example: В доступе отказано
+
+    checkAuth:
+      type: object
+
+      properties:
+        X-Token:
+          type: string
+          example: fFGfj34lfjkj635735=
+
+    user:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Max
+
+        email:
+          type: string
+          example: max@mail.ru
+
+        avatar:
+          type: string
+          example: 'https://url-to-image/image.png'
+
+        isPro:
+          type: boolean
+          example: true
+
+        token:
+          $ref: '#/components/schemas/token'
+
+    offerId:
+      type: string
+      example: dsds-dyut-ut87-hjkldfdfl54
+    
+    token:
+      type: string
+      example: fFGfj34lfjkj635735=
+      
+    newComment:
+      type: object
+      
+      properties:
+          comment:
+            type: string
+            example: 'Some fun comment'
+
+          rating:
+            type: number
+            example: 5
+    
+    comment:
+      type: object
+      
+      properties:
+          id:
+            type: string
+            example: dsds-dyut-ut87-hjkldfdfl54
+
+          date:
+            type: string
+            example: 2024-05-23T06:14:56.569Z
+
+          user:
+            $ref: '#/components/schemas/user'
+
+          comment:
+            type: string
+            example: 'Some fun comment'
+
+          rating:
+            type: number
+            example: 5
+    
+    comments:
+      type: array
+      items:
+        type: object
+        
+        $ref: '#/components/schemas/comment'
+
+    newOffer:
+      type: object
+      
+      properties:
+        title:
+          type: string
+          
+          example: 'Beautiful & luxurious studio at great location'
+        type: 
+          type: string
+          example: apartment
+          
+        price:
+          type: number
+          example: 120
+        
+        city:
+          type: object
+          properties: 
+            name:
+              type: string
+              example: Amsterdam
+            location: 
+              type: object
+              properties:
+                latitude:
+                  type: number
+                  example: 52.35514938496378
+                longitude: 
+                  type: number
+                  example: 4.673877537499948
+                zoom:
+                  type: number
+                  example: 8
+        location: 
+          type: object
+          properties:
+                latitude:
+                  type: number
+                  example: 52.35514938496378
+                longitude: 
+                  type: number
+                  example: 4.673877537499948
+                zoom:
+                  type: number
+                  example: 8
+        isFavorite:
+          type: boolean
+          example: true
+          
+        isPremium:
+          type: boolean
+          example: false
+        
+        rating:
+          type: number
+          example: 4
+          
+        description: 
+          type: string
+          example: A quiet cozy and picturesque that hides behind a a river by the unique lightness of Amsterdam.
+          
+        bedrooms:
+          type: number
+          example: 3
+        
+        goods:
+          type: array
+          items:
+            type: string
+            example: Heating
+        
+        host: 
+          $ref: '#/components/schemas/user'
+        
+        images:
+          items:
+            type: string
+            example: https://url-to-image/image.png
+        
+        maxAdults:
+          type: number
+          example: 4
+        
+    offer:
+      type: object
+      
+      allOf:
+        - $ref: '#/components/schemas/newOffer'
+      
+      properties:
+        id:
+          type: string
+          example: '6af6f711-c28d-4121-82cd-e0b462a27f00'
+        
+        
+    offers:
+      type: array
+      items:
+        $ref: '#/components/schemas/offer'
+        
+
+    offerNotFoundError:
+      type: object
+
+      properties:
+        errorType:
+          type: string
+          example: COMMON_ERROR
+        message:
+          type: string
+          example: 'Предложение с указанным offerId не найдено'
+    
+    validationError:
+      type: object
+      
+      properties:
+        errorType: 
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: 'Ошибка валидации данных'
