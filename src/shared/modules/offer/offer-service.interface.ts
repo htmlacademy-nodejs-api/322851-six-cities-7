@@ -9,7 +9,7 @@ export interface OfferService {
   deleteById(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
   decCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null>;
-  changeRating(offerId: string, raiting: number): Promise<void>;
+  changeRating(offerId: string, newRate: number): Promise<void>;
   findPremiunOffers(city: string, count: number): Promise<DocumentType<OfferEntity>[]>;
   findFavoriteOffers(userId: string): Promise<DocumentType<OfferEntity>[]>;
   changeFavoriteStatus(offerId: string, status: boolean): Promise<DocumentType<OfferEntity> | null>;

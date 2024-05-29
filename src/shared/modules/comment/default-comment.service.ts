@@ -1,5 +1,5 @@
 import { DocumentType, types } from '@typegoose/typegoose';
-import { CommentEntity, CommentService, CreateCommentDto } from './index.js';
+import { CommentEntity, CommentService, CreateCommentDto, UpdateCommentDto } from './index.js';
 import { inject, injectable } from 'inversify';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/index.js';
@@ -23,10 +23,14 @@ export class DefaultCommentService implements CommentService {
   }
 
   public async findByOfferId(offerId: string): Promise<DocumentType<CommentEntity>[]> {
-    return this.commentModel.find({offerId}).populate('offerId');
+    return this.commentModel.find({offerId}).populate('offerId').exec();
   }
 
-  public async deletefindByOfferId(offerId: string): Promise<number> {
+  public async updateById(id: string, dto: UpdateCommentDto): Promise<DocumentType<CommentEntity> | null> {
+    return this.commentModel.findByIdAndUpdate(id, dto).populate('offerId').exec();
+  }
+
+  public async deleteByOfferId(offerId: string): Promise<number> {
     const { deletedCount } = await this.commentModel.deleteMany({offerId}).exec();
     return deletedCount;
   }

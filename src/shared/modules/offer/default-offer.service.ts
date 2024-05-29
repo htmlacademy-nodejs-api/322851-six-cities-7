@@ -50,10 +50,10 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.findByIdAndUpdate(offerId, {$inc: {comments: -1}}).exec();
   }
 
-  public async changeRating(offerId: string, raiting: number): Promise<void> {
+  public async changeRating(offerId: string, newRate: number): Promise<void> {
     await this.offerModel.findByIdAndUpdate(
       offerId,
-      {$set: { rating: { $multuply: [ { $add: ['$raiting', raiting ] }, 1 / 2 ] }}});
+      [{$set: { rating: {$multiply: [{$add: ['$rating', newRate]}, 0.5]}}}]);
   }
 
   public async findPremiunOffers(city: string, count: number): Promise<DocumentType<OfferEntity>[]> {
