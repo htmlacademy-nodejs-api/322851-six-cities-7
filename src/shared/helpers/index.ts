@@ -2,7 +2,9 @@ export {
   getRandomInteger,
   getRandomSubArray,
   getRanndomElement,
-  getErrorMessage
+  getErrorMessage,
+  createErrorObject,
+  fillDto
 } from './common.js';
 
 export { getCurrentModeuleDicrectoryPath } from './file-system.js';
