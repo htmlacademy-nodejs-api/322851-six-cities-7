@@ -416,7 +416,7 @@ paths:
           required: true
 
         responses:
-          '201':
+          '200':
             description: Список предложений
             content:
               application/json:
@@ -455,8 +455,8 @@ paths:
           required: true
 
         responses:
-          '201':
-            description: Новое предложений
+          '200':
+            description: Новое предложение
             content:
               application/json:
                 schema:
@@ -503,7 +503,7 @@ paths:
           required: true
 
         responses:
-          '201':
+          '200':
             description: Список предложений
             content:
               application/json:

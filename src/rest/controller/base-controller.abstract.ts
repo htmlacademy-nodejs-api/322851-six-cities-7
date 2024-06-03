@@ -48,7 +48,7 @@ export abstract class BaseController implements Controller {
       .json(data);
   }
 
-  public noContent<T>(res: Response, data: T): void {
+  public noContent<T>(res: Response, data?: T): void {
     res
       .type(this.DEFAULT_CONTENT_TYPE)
       .status(StatusCodes.NO_CONTENT)

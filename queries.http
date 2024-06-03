@@ -2,3 +2,76 @@
 GET http://localhost:3123/api HTTP/1.1
 
 ###
+
+# Create new user
+POST http://localhost:5000/register HTTP/1.1
+Content-Type: application/json
+
+{
+  "name": "TestUser",
+  "avatar": "some.jpg",
+  "email": "fest@example.com",
+  "isPro": true,
+  "password": "qwerty"
+}
+###
+
+#Get Offers
+get http://localhost:5000/offers HTTP/1.1
+Content-Type: application/json
+###
+
+#Post Offers
+POST  http://localhost:5000/offers HTTP/1.1
+Content-Type: application/json
+
+{
+    "price": 10280,
+    "title": "Very very very splendid place.",
+    "description": "It was good",
+    "images": ["category-disk.jpg"],
+    "type": "house",
+    "city": "Paris",
+    "date": "2024-05-30T03:39:12.729Z",
+    "previewImage": "category-disk.jpg",
+    "isPremium": true,
+    "offerLatitude": 42.8566,
+    "offerLongitude": 139.3895,
+    "offerZoom": 16,
+    "bedrooms": 2,
+    "maxAdults": 4,
+    "goods": ["tv"]
+}
+###
+
+#Get Offer
+get http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
+Content-Type: application/json
+###
+
+#Update Offer
+PUT http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
+Content-Type: application/json
+
+{
+  "description": "It is gorgeous"
+}
+###
+
+#Get favorites
+GET http://localhost:5000/favorites HTTP/1.1
+Content-Type: application/json
+
+###
+
+#ChangeFavorites
+PATCH http://localhost:5000/favorites/6650f4cf1b81400365741b7e/0 HTTP/1.1
+Content-Type: application/json
+
+###
+
+#Get Premiums
+GET http://localhost:5000/premiumOffers/Paris HTTP/1.1
+Content-Type: application/json
+
+###
