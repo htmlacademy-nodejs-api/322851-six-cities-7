@@ -17,9 +17,7 @@ export class TSVOfferGenerator implements OfferGenerator {
     const city = getRanndomElement(Object.values(SixCities));
     const previewImage = getRanndomElement(this.mockData.previewImages);
     const images = getRandomSubArray(this.mockData.images, Setting.OFFER_IMAGES_COUNT).join(';');
-    const isFavorite = faker.datatype.boolean();
     const isPremium = faker.datatype.boolean();
-    const rating = getRandomInteger(Setting.MINRAITING, Setting.MAXRAITING * 10) / 10;
     const type = getRanndomElement(OFFER_TYPES);
     const bedrooms = getRandomInteger(Setting.MINBEDROOMS, Setting.MAXBEDROOMS);
     const maxAdults = getRandomInteger(Setting.MINADULTS, Setting.MAXADULTS);
@@ -32,7 +30,6 @@ export class TSVOfferGenerator implements OfferGenerator {
       password: getRanndomElement(this.mockData.passwords),
       isPro: faker.datatype.boolean()
     };
-    const comments = getRandomInteger(0, Setting.MAX_COMMENTS_VALUE);
     const location = {
       latitude: faker.location.latitude(),
       longitude: faker.location.longitude(),
@@ -50,9 +47,7 @@ export class TSVOfferGenerator implements OfferGenerator {
       location.latitude,
       location.longitude,
       location.zoom,
-      isFavorite,
       isPremium,
-      rating,
       previewImage,
       images,
       description,
@@ -64,7 +59,6 @@ export class TSVOfferGenerator implements OfferGenerator {
       host.email,
       host.isPro,
       host.avatar,
-      comments,
       date
     ].join('\t');
   }

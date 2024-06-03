@@ -3,10 +3,9 @@ import { BaseController, HttpError, HttpMethod } from '../../../rest/index.js';
 import { Component } from '../../types/index.js';
 import { Config, Logger, RestSchema } from '../../libs/index.js';
 import { NextFunction, Response } from 'express';
-import { CreateUserDto, CreateUserRequest, UserService } from './index.js';
+import { CreateUserRequest, UserService, UserRdo } from './index.js';
 import { StatusCodes } from 'http-status-codes';
-import { fillDto } from '../../helpers/common.js';
-import { UserRdo } from './rdo/user.rdo.js';
+import { fillRdo } from '../../helpers/common.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -41,7 +40,7 @@ export class UserController extends BaseController {
 
     const newUser = await this.userService.create(req.body, this.config.get('SALT'));
 
-    this.created(res, fillDto(UserRdo, newUser));
+    this.created(res, fillRdo(UserRdo, newUser));
   }
 
 

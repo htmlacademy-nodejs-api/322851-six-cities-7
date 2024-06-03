@@ -30,6 +30,9 @@ export class UserEntity extends defaultClasses.TimeStamps implements Omit<User, 
   @prop({required: true})
   public isPro: boolean;
 
+  @prop({required: true, type: () => String, default: []})
+  public favorites: string[];
+
   constructor(userData: User) {
     super();
 

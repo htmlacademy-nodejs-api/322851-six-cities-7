@@ -41,7 +41,7 @@ const getErrorMessage = (error: unknown) => (error instanceof Error) ? error.mes
 
 const createErrorObject = (message: string) => ({error: message});
 
-const fillDto = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+const fillRdo = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
 
 export {
   getRandomInteger,
@@ -49,5 +49,5 @@ export {
   getRanndomElement,
   getErrorMessage,
   createErrorObject,
-  fillDto
+  fillRdo
 };

@@ -28,13 +28,13 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true, type: () => String})
   public images: string[];
 
-  @prop({required: true})
+  @prop({})
   public isFavorite: boolean;
 
-  @prop({required: true})
+  @prop({required: true, default: false})
   public isPremium: boolean;
 
-  @prop({required: true})
+  @prop({required: true, default: 0})
   public rating: number;
 
   @prop({required: true})
@@ -64,7 +64,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public offerZoom: number;
 
-  @prop({required: true})
+  @prop({required: true, default: 0})
   public comments: number;
 }
 

@@ -26,9 +26,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       offerLatitude,
       offerLongitude,
       offerZoom,
-      isFavorite,
       isPremium,
-      raiting,
       previewImage,
       images,
       description,
@@ -40,7 +38,6 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       email,
       isPro,
       avatar,
-      comments,
       date
     ] = line.split('\t');
 
@@ -53,16 +50,13 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       date: (date) ? date : dayjs().toISOString(),
       previewImage,
       images: images.split(';'),
-      isFavorite: this.parseBoolean(isFavorite),
       isPremium: this.parseBoolean(isPremium),
-      rating: parseFloat(raiting),
       type,
       bedrooms: parseInt(bedrooms, 10),
       maxAdults: parseInt(maxAdults, 10),
       price: parseInt(price, 10),
       goods: goods.split(','),
       host: this.parseUser(userName, password, email, isPro, avatar),
-      comments: parseInt(comments, 10),
       offerLatitude: latitude,
       offerLongitude: longitude,
       offerZoom: zoom

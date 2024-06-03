@@ -61,12 +61,11 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.find({city: city, isPremium: true}, {}, {limit}).populate(['host', 'city']).exec();
   }
 
-  public async findFavoriteOffers(userId: string): Promise<DocumentType<OfferEntity>[]> {
-    return this.offerModel.find({host: userId, isFavorite: true}).populate(['host', 'city']).exec();
-  }
-
   public async changeFavoriteStatus(offerId: string, status: boolean): Promise<DocumentType<OfferEntity> | null> {
     return this.offerModel.findByIdAndUpdate(offerId, {isFavorite: status}).populate(['host', 'city']).exec();
   }
 
+  public async findFavoriteOffers(favorites: string[]): Promise<DocumentType<OfferEntity>[]> {
+    return this.offerModel.find({_id: {$in: favorites}}).exec();
+  }
 }

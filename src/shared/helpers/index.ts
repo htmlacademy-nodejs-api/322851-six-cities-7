@@ -4,7 +4,7 @@ export {
   getRanndomElement,
   getErrorMessage,
   createErrorObject,
-  fillDto
+  fillRdo
 } from './common.js';
 
 export { getCurrentModeuleDicrectoryPath } from './file-system.js';
