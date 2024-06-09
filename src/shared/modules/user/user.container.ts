@@ -3,6 +3,8 @@ import { UserEntity, UserModel, UserService } from './index.js';
 import { Component } from '../../types/index.js';
 import { DefaultUserService } from './index.js';
 import { types } from '@typegoose/typegoose';
+import { Controller } from '../../../rest/index.js';
+import { UserController } from './user.controller.js';
 
 
 export function createUserContainer() {
@@ -10,6 +12,7 @@ export function createUserContainer() {
 
   userContainer.bind<UserService>(Component.UserService).to(DefaultUserService).inSingletonScope();
   userContainer.bind<types.ModelType<UserEntity>>(Component.UserModel).toConstantValue(UserModel);
+  userContainer.bind<Controller>(Component.UserController).to(UserController).inSingletonScope();
 
   return userContainer;
 }

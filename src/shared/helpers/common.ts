@@ -1,3 +1,5 @@
+import { ClassConstructor, plainToInstance } from 'class-transformer';
+
 const getRandomInteger = (a: number, b: number) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -37,10 +39,15 @@ const getRandomSubArray = <T>(arr: T[], count?: number) => {
 
 const getErrorMessage = (error: unknown) => (error instanceof Error) ? error.message : '';
 
+const createErrorObject = (message: string) => ({error: message});
+
+const fillRdo = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
 
 export {
   getRandomInteger,
   getRandomSubArray,
   getRanndomElement,
-  getErrorMessage
+  getErrorMessage,
+  createErrorObject,
+  fillRdo
 };

@@ -38,4 +38,12 @@ export class DefaultUserService implements UserService {
 
     return user;
   }
+
+  public async addToFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(userId, {$push: {favorites: offerId}}).exec();
+  }
+
+  public async deleteFromFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findByIdAndUpdate(userId, {$pull: {favorites: offerId}}).exec();
+  }
 }
