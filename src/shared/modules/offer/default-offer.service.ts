@@ -20,6 +20,11 @@ export class DefaultOfferService implements OfferService {
     return newOffer;
   }
 
+  public async exists(documentId: string): Promise<boolean> {
+    const offer = await this.offerModel.findById(documentId);
+    return Boolean(offer);
+  }
+
   public async find(count?: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? this.DEFAULT_OFFERS_COUNT;
     return this.offerModel
@@ -56,7 +61,7 @@ export class DefaultOfferService implements OfferService {
       [{$set: { rating: {$multiply: [{$add: ['$rating', newRate]}, 0.5]}}}]);
   }
 
-  public async findPremiunOffers(city: string, count: number): Promise<DocumentType<OfferEntity>[]> {
+  public async findPremiumOffers(city: string, count: number): Promise<DocumentType<OfferEntity>[]> {
     const limit = count ?? this.DEFAULT_PREMIUM_OFFERS_COUNT;
     return this.offerModel.find({city: city, isPremium: true}, {}, {limit}).populate(['host', 'city']).exec();
   }

@@ -1,8 +1,8 @@
 import { injectable, inject } from 'inversify';
-import { BaseController, HttpError, HttpMethod } from '../../../rest/index.js';
+import { BaseController, DocumentExistsMiddleware, HttpError, HttpMethod, UploadFileMiddleware } from '../../../rest/index.js';
 import { Component } from '../../types/index.js';
 import { Config, Logger, RestSchema } from '../../libs/index.js';
-import { NextFunction, Response } from 'express';
+import { NextFunction, Response, Request } from 'express';
 import { CreateUserRequest, UserService, UserRdo } from './index.js';
 import { StatusCodes } from 'http-status-codes';
 import { fillRdo } from '../../helpers/common.js';
@@ -22,6 +22,16 @@ export class UserController extends BaseController {
     this.addRoute({path: '/auth', method: HttpMethod.GET, handler: this.auth});
     this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login});
     this.addRoute({path: '/logout', method: HttpMethod.POST, handler: this.logout});
+    this.addRoute({
+      path: '/user/:userId/avatar',
+      method: HttpMethod.POST,
+      handler: this.uploadAvatar,
+      middlewares: [
+        new DocumentExistsMiddleware(this.userService, 'userId', 'User'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
+      ]
+
+    });
   }
 
   public async create(
@@ -88,4 +98,13 @@ export class UserController extends BaseController {
       'UserController'
     );
   }
+
+  public async uploadAvatar(
+    req: Request,
+    res: Response
+  ) : Promise<void> {
+    this.created(res, req.file?.path);
+  }
+
+
 }
