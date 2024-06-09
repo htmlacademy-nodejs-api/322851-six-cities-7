@@ -5,3 +5,4 @@ export { Offer } from './offer.type.js';
 export { User } from './user.type.js';
 export { Component } from './component.enum.js';
 export { Location } from './location.type.js';
+export { DocumentExists } from './document-exists.interface.js';

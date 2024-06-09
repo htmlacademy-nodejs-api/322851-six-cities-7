@@ -49,6 +49,15 @@ const SixCities = {
   }
 } as const;
 
+const PLACE_TYPES = ['apartment', 'house', 'room', 'hotel'];
+const PLACE_BENEFITS = [
+  'Breakfast',
+  'Air conditioning',
+  'Laptop friendly workspace',
+  'Baby seat', 'Washer',
+  'Towels',
+  'Fridge'];
+
 const Setting = {
   MAXPRICE: 100000,
   MINPRICE: 100,
@@ -78,5 +87,7 @@ export {
   OFFER_TYPES,
   OFFER_GOODS,
   Setting,
-  DatabaseSetting
+  DatabaseSetting,
+  PLACE_TYPES,
+  PLACE_BENEFITS
 };

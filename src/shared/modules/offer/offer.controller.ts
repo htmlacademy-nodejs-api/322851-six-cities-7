@@ -1,5 +1,13 @@
 import { inject, injectable } from 'inversify';
-import { BaseController, HttpError, HttpMethod, RequestBody, RequestParams } from '../../../rest/index.js';
+import {
+  BaseController,
+  HttpError,
+  HttpMethod,
+  RequestBody,
+  RequestParams,
+  ValidateObjectIdMiddleware,
+  ValidateDtoMiddleware,
+  DocumentExistsMiddleware } from '../../../rest/index.js';
 import { Component } from '../../types/component.enum.js';
 import { Logger } from '../../libs/index.js';
 import { fillRdo } from '../../helpers/common.js';
@@ -23,12 +31,56 @@ export class OfferController extends BaseController {
     this.logger.info('Register routes for offer controller');
 
     this.addRoute({path: '/offers', method: HttpMethod.GET, handler: this.index});
-    this.addRoute({path: '/offers', method: HttpMethod.POST, handler: this.create});
-    this.addRoute({path: '/offers/:offerId', method: HttpMethod.GET, handler: this.showOffer});
-    this.addRoute({path: '/offers/:offerId', method: HttpMethod.PUT, handler: this.update});
-    this.addRoute({path: '/offers/:offerId', method: HttpMethod.DELETE, handler: this.delete});
+
+    this.addRoute({
+      path: '/offers',
+      method: HttpMethod.POST,
+      handler: this.create,
+      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)]
+    });
+
+    this.addRoute({
+      path: '/offers/:offerId',
+      method: HttpMethod.GET,
+      handler: this.showOffer,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+      ]});
+
+    this.addRoute({
+      path: '/offers/:offerId',
+      method: HttpMethod.PATCH,
+      handler: this.update,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new ValidateDtoMiddleware(UpdateOfferDto),
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+      ]
+    });
+
+    this.addRoute({
+      path: '/offers/:offerId',
+      method: HttpMethod.DELETE,
+      handler: this.delete,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+      ]
+    });
+
     this.addRoute({path: '/favorites', method: HttpMethod.GET, handler: this.showFavorites});
-    this.addRoute({path: '/favorites/:offerId/:status', method: HttpMethod.PATCH, handler: this.updateFavorites});
+
+    this.addRoute({
+      path: '/favorites/:offerId/:status',
+      method: HttpMethod.PATCH,
+      handler: this.updateFavorites,
+      middlewares: [
+        new ValidateObjectIdMiddleware('offerId'),
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+      ]
+    });
+
     this.addRoute({path: '/premiumOffers/:cityName', method: HttpMethod.GET, handler: this.showPremiumOffers});
   }
 
@@ -60,14 +112,6 @@ export class OfferController extends BaseController {
   ): Promise<void> {
     const offer = await this.offerService.findById(req.params.offerId);
 
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${req.params.offerId} not found`,
-        'Offer controller'
-      );
-    }
-
     this.ok(res, fillRdo(DetailedOfferRdo, fillRdo(DetailedOfferRdo, offer)));
   }
 
@@ -75,35 +119,15 @@ export class OfferController extends BaseController {
     req: Request<Record<string, string>, RequestBody, UpdateOfferDto>,
     res: Response
   ): Promise<void> {
-    const offer = await this.offerService.findById(req.params.offerId);
+    const offer = await this.offerService.updateById(req.params.offerId, req.body);
 
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${req.params.offerId} not found`,
-        'Offer controller'
-      );
-    }
-
-    const result = await this.offerService.updateById(req.params.offerId, req.body);
-
-    this.ok(res, fillRdo(DetailedOfferRdo, fillRdo(DetailedOfferRdo, result)));
+    this.ok(res, fillRdo(DetailedOfferRdo, fillRdo(DetailedOfferRdo, offer)));
   }
 
   private async delete(
     req: Request<Record<string, string>, RequestBody, UpdateOfferDto>,
     res: Response
   ): Promise<void> {
-    const offer = await this.offerService.findById(req.params.offerId);
-
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${req.params.offerId} not found`,
-        'Offer controller'
-      );
-    }
-
     await this.offerService.deleteById(req.params.offerId);
 
     this.noContent(res);
@@ -114,6 +138,7 @@ export class OfferController extends BaseController {
     res: Response
   ) {
     const user = await this.userService.findById('665bb18dcdd618cb1169f48f');
+
     if (user) {
       const offers = await this.offerService.findFavoriteOffers(user.favorites);
       const result = offers.map((offer) => {
@@ -130,19 +155,12 @@ export class OfferController extends BaseController {
   ) {
     const offer = await this.offerService.findById(req.params.offerId);
 
-    if (!offer) {
-      throw new HttpError(
-        StatusCodes.NOT_FOUND,
-        `Offer with id ${req.params.offerId} not found`,
-        'Offer controller'
-      );
-    }
     let user = await this.userService.findById('665bb18dcdd618cb1169f48f');
 
-    if (user && (user.favorites.includes(req.params.offerId) && req.params.status === '0')) {
+    if (offer && user && (user.favorites.includes(req.params.offerId) && req.params.status === '0')) {
       user = await this.userService.deleteFromFavorites('665bb18dcdd618cb1169f48f', req.params.offerId);
       offer.isFavorite = false;
-    } else if (user && (!(user.favorites.includes(req.params.offerId)) && req.params.status === '1')) {
+    } else if (offer && user && (!(user.favorites.includes(req.params.offerId)) && req.params.status === '1')) {
       user = await this.userService.addToFavorites('665bb18dcdd618cb1169f48f', req.params.offerId);
       offer.isFavorite = true;
     } else {
@@ -167,7 +185,7 @@ export class OfferController extends BaseController {
         `City ${req.params.cityName} not found`
       );
     }
-    const offers = await this.offerService.findPremiunOffers(city.id, 3);
+    const offers = await this.offerService.findPremiumOffers(city.id, 3);
     const result = offers.map((offer) => fillRdo(ShortOfferRdo, offer));
 
     this.ok(res, result);

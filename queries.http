@@ -45,16 +45,16 @@ Content-Type: application/json
 ###
 
 #Get Offer
-get http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
+get http://localhost:5000/offers/665bae93e7eab170c1094c26 HTTP/1.1
 Content-Type: application/json
 ###
 
 #Update Offer
-PUT http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
+PATCH http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
 Content-Type: application/json
 
 {
-  "description": "It is gorgeous"
+  "price": 110
 }
 ###
 
@@ -73,5 +73,37 @@ Content-Type: application/json
 #Get Premiums
 GET http://localhost:5000/premiumOffers/Paris HTTP/1.1
 Content-Type: application/json
+
+###
+
+
+#Get Comments
+GET http://localhost:5000/comments/6650f4cf1b81400365741b75 HTTP/1.1
+Content-Type: application/json
+
+###
+
+#Add new Comment
+POST http://localhost:5000/comments/6650f4cf1b81400365741b76 HTTP/1.1
+Content-Type: application/json
+
+{
+  "date": "2024-06-04T01:29:12.729Z",
+  "comment": "It was horrible",
+  "rating": "2",
+  "offerId": "6650f4cf1b81400365741b76"
+}
+
+###
+
+POST http://localhost:5000/user/6650f4cf1b81400365741b71/avatar HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="avatar"; filename="avatar-max.jpg"
+Content-Type: image/jpeg
+
+< H:\djangoboy\Projects\HA\avatar-max.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
 
 ###
