@@ -4,34 +4,53 @@ GET http://localhost:3123/api HTTP/1.1
 ###
 
 # Create new user
-POST http://localhost:5000/register HTTP/1.1
+POST http://localhost:4000/register HTTP/1.1
 Content-Type: application/json
 
 {
   "name": "TestUser",
   "avatar": "some.jpg",
-  "email": "fest@example.com",
+  "email": "pest@example.com",
   "isPro": true,
   "password": "qwerty"
 }
 ###
 
-#Get Offers
-get http://localhost:5000/offers HTTP/1.1
+# Login
+POST http://localhost:4000/login HTTP/1.1
 Content-Type: application/json
+
+{
+  "email": "pest@example.com",
+  "password": "qwerty"
+}
+###
+
+# Check Auth
+GET http://localhost:4000/auth HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6InBlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NjljZGVjZDk2ZjMzN2M3YjFhODEwYSIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMTI0ODAsImV4cCI6MTcxODM4NTI4MH0.mc99EgKFNns3BdzBqRM-_-RUXLhkCw4oxrHANwVIrzw
+
+###
+
+#Get Offers
+get http://localhost:4000/offers HTTP/1.1
+Content-Type: application/json
+
 ###
 
 #Post Offers
-POST  http://localhost:5000/offers HTTP/1.1
+POST  http://localhost:4000/offers HTTP/1.1
 Content-Type: application/json
 
 {
     "price": 10280,
     "title": "Very very very splendid place.",
-    "description": "It was good",
-    "images": ["category-disk.jpg"],
+    "description": "Olddd dfkjdflkjlkjsdkfljsdflkjsdksdjflkdjfsldsjldsfj",
+    "images": ["category-disk.jpg", "category-disk.jpg", "category-disk.jpg",
+    "category-disk.jpg", "category-disk.jpg", "category-disk.jpg"],
     "type": "house",
-    "city": "Paris",
+    "city": "Amsterdam",
     "date": "2024-05-30T03:39:12.729Z",
     "previewImage": "category-disk.jpg",
     "isPremium": true,
@@ -40,63 +59,74 @@ Content-Type: application/json
     "offerZoom": 16,
     "bedrooms": 2,
     "maxAdults": 4,
-    "goods": ["tv"]
+    "goods": ["Breakfast", "Fridge"]
 }
 ###
 
 #Get Offer
-get http://localhost:5000/offers/665bae93e7eab170c1094c26 HTTP/1.1
+get http://localhost:4000/offers/66699aedb04f254779abf332 HTTP/1.1
 Content-Type: application/json
 ###
 
 #Update Offer
-PATCH http://localhost:5000/offers/665bae93e7eab170c1094c25 HTTP/1.1
+PATCH http://localhost:4000/offers/66699aedb04f254779abf332 HTTP/1.1
 Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJmYXZvcml0ZXMiOlsiNjY1MGY0Y2YxYjgxNDAwMzY1NzQxYjc2Il0sImlhdCI6MTcxODA2ODMwMywiZXhwIjoxNzE4MjQxMTAzfQ.cEJJFrFpi6ba7Ekk1f3XoQBSG4cK2_Z7evxAKOCdIVI
 
 {
-  "price": 110
+  "isPremium": true
 }
 ###
 
-#Get favorites
-GET http://localhost:5000/favorites HTTP/1.1
+#Delete Offer
+DELETE http://localhost:4000/offers/6650f4cf1b81400365741b7e HTTP/1.1
 Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJmYXZvcml0ZXMiOlsiNjY1MGY0Y2YxYjgxNDAwMzY1NzQxYjc2Il0sImlhdCI6MTcxODA2ODMwMywiZXhwIjoxNzE4MjQxMTAzfQ.cEJJFrFpi6ba7Ekk1f3XoQBSG4cK2_Z7evxAKOCdIVI
+
+###
+
+#Get favorites
+GET http://localhost:4000/favorites HTTP/1.1
+Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMTIyNjEsImV4cCI6MTcxODM4NTA2MX0.ITMHQ_U-T_5m_DAdexgM1kKChp30PmyVcuvS99nebjI
 
 ###
 
 #ChangeFavorites
-PATCH http://localhost:5000/favorites/6650f4cf1b81400365741b7e/0 HTTP/1.1
+PATCH http://localhost:4000/favorites/66699aedb04f254779abf332/1 HTTP/1.1
 Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJmYXZvcml0ZXMiOlsiNjY1MGY0Y2YxYjgxNDAwMzY1NzQxYjc2Il0sImlhdCI6MTcxODA2ODMwMywiZXhwIjoxNzE4MjQxMTAzfQ.cEJJFrFpi6ba7Ekk1f3XoQBSG4cK2_Z7evxAKOCdIVI
 
 ###
 
 #Get Premiums
-GET http://localhost:5000/premiumOffers/Paris HTTP/1.1
+GET http://localhost:4000/premiumOffers/Cologne HTTP/1.1
 Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMTIyNjEsImV4cCI6MTcxODM4NTA2MX0.ITMHQ_U-T_5m_DAdexgM1kKChp30PmyVcuvS99nebjI
 
 ###
 
 
 #Get Comments
-GET http://localhost:5000/comments/6650f4cf1b81400365741b75 HTTP/1.1
+GET http://localhost:4000/comments/66699aedb04f254779abf332 HTTP/1.1
 Content-Type: application/json
 
 ###
 
 #Add new Comment
-POST http://localhost:5000/comments/6650f4cf1b81400365741b76 HTTP/1.1
+POST http://localhost:4000/comments/66699aedb04f254779abf332 HTTP/1.1
 Content-Type: application/json
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJmYXZvcml0ZXMiOlsiNjY1MGY0Y2YxYjgxNDAwMzY1NzQxYjc2Il0sImlhdCI6MTcxODA2ODMwMywiZXhwIjoxNzE4MjQxMTAzfQ.cEJJFrFpi6ba7Ekk1f3XoQBSG4cK2_Z7evxAKOCdIVI
 
 {
   "date": "2024-06-04T01:29:12.729Z",
-  "comment": "It was horrible",
-  "rating": "2",
-  "offerId": "6650f4cf1b81400365741b76"
+  "comment": "It was wonderful",
+  "rating": "5"
 }
 
 ###
 
-POST http://localhost:5000/user/6650f4cf1b81400365741b71/avatar HTTP/1.1
+POST http://localhost:4000/user/6650f4cf1b81400365741b71/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW

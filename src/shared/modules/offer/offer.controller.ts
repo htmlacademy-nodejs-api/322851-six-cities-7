@@ -16,6 +16,8 @@ import { Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 import { CityService } from '../city/city-service.interface.js';
 import { UserService } from '../user/user-service.interface.js';
+import { PrivateRouteMiddleware } from '../../../rest/middleware/private-route.middleware.js';
+import { Setting } from '../../const.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -36,7 +38,9 @@ export class OfferController extends BaseController {
       path: '/offers',
       method: HttpMethod.POST,
       handler: this.create,
-      middlewares: [new ValidateDtoMiddleware(CreateOfferDto)]
+      middlewares: [
+        new PrivateRouteMiddleware(),
+        new ValidateDtoMiddleware(CreateOfferDto)]
     });
 
     this.addRoute({
@@ -53,6 +57,7 @@ export class OfferController extends BaseController {
       method: HttpMethod.PATCH,
       handler: this.update,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
@@ -64,18 +69,26 @@ export class OfferController extends BaseController {
       method: HttpMethod.DELETE,
       handler: this.delete,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
       ]
     });
 
-    this.addRoute({path: '/favorites', method: HttpMethod.GET, handler: this.showFavorites});
+    this.addRoute({
+      path: '/favorites',
+      method: HttpMethod.GET,
+      handler: this.showFavorites,
+      middlewares: [
+        new PrivateRouteMiddleware()
+      ]});
 
     this.addRoute({
       path: '/favorites/:offerId/:status',
       method: HttpMethod.PATCH,
       handler: this.updateFavorites,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
       ]
@@ -85,10 +98,10 @@ export class OfferController extends BaseController {
   }
 
   private async index(
-    _req: Request,
+    req: Request,
     res: Response
   ): Promise<void> {
-    const offers = await this.offerService.find(3);
+    const offers = await this.offerService.find(req.tokenPayload?.email);
     const result = offers.map((offer) => fillRdo(ShortOfferRdo, offer));
 
     this.ok(res, result);
@@ -99,20 +112,23 @@ export class OfferController extends BaseController {
     res: Response
   ): Promise<void> {
     const city = await this.cityService.findByName(req.body.city);
-    const host = await this.userService.findById('6650f4cf1b81400365741b71');
+    const host = req.tokenPayload;
 
-    const newOffer = await this.offerService.create({...req.body, city: city?.id, host: host?.id});
+    const newOffer = await this.offerService.create({...req.body, city: city?.id, host: host.id});
 
     this.created(res, fillRdo(DetailedOfferRdo, newOffer));
   }
 
   private async showOffer(
-    req: Request<Record<string, string>, RequestBody, CreateOfferDto>,
+    req: Request<Record<string, string>, RequestBody>,
     res: Response
   ): Promise<void> {
     const offer = await this.offerService.findById(req.params.offerId);
-
-    this.ok(res, fillRdo(DetailedOfferRdo, fillRdo(DetailedOfferRdo, offer)));
+    if (req.tokenPayload) {
+      const user = await this.userService.findByEmail(req.tokenPayload.email);
+      offer!.isFavorite = user!.favorites.includes(req.params.offerId);
+    }
+    this.ok(res, fillRdo(DetailedOfferRdo, offer));
   }
 
   private async update(
@@ -120,6 +136,11 @@ export class OfferController extends BaseController {
     res: Response
   ): Promise<void> {
     const offer = await this.offerService.updateById(req.params.offerId, req.body);
+
+    if (req.tokenPayload) {
+      const user = await this.userService.findByEmail(req.tokenPayload.email);
+      offer!.isFavorite = user!.favorites.includes(req.params.offerId);
+    }
 
     this.ok(res, fillRdo(DetailedOfferRdo, fillRdo(DetailedOfferRdo, offer)));
   }
@@ -134,13 +155,13 @@ export class OfferController extends BaseController {
   }
 
   private async showFavorites(
-    _req: Request<RequestParams, RequestBody>,
+    req: Request<RequestParams, RequestBody>,
     res: Response
   ) {
-    const user = await this.userService.findById('665bb18dcdd618cb1169f48f');
+    const user = await this.userService.findByEmail(req.tokenPayload.email);
 
     if (user) {
-      const offers = await this.offerService.findFavoriteOffers(user.favorites);
+      const offers = await this.offerService.findFavoriteOffers(user?.favorites);
       const result = offers.map((offer) => {
         offer.isFavorite = true;
         return fillRdo(ShortOfferRdo, offer);
@@ -155,13 +176,14 @@ export class OfferController extends BaseController {
   ) {
     const offer = await this.offerService.findById(req.params.offerId);
 
-    let user = await this.userService.findById('665bb18dcdd618cb1169f48f');
+    const user = await this.userService.findByEmail(req.tokenPayload.email);
+    this.logger.warning(`status: ${req.params.status === '1'}`);
 
-    if (offer && user && (user.favorites.includes(req.params.offerId) && req.params.status === '0')) {
-      user = await this.userService.deleteFromFavorites('665bb18dcdd618cb1169f48f', req.params.offerId);
+    if (offer && user && (user.favorites.includes(offer.id) && req.params.status === '0')) {
+      await this.userService.deleteFromFavorites('665bb18dcdd618cb1169f48f', offer.id);
       offer.isFavorite = false;
-    } else if (offer && user && (!(user.favorites.includes(req.params.offerId)) && req.params.status === '1')) {
-      user = await this.userService.addToFavorites('665bb18dcdd618cb1169f48f', req.params.offerId);
+    } else if (offer && user && (!(user.favorites.includes(offer.id)) && req.params.status === '1')) {
+      await this.userService.addToFavorites('665bb18dcdd618cb1169f48f', offer.id);
       offer.isFavorite = true;
     } else {
       throw new HttpError(
@@ -185,7 +207,7 @@ export class OfferController extends BaseController {
         `City ${req.params.cityName} not found`
       );
     }
-    const offers = await this.offerService.findPremiumOffers(city.id, 3);
+    const offers = await this.offerService.findPremiumOffers(city.id, Setting.PREMIUM_OFFERS_COUNT, req.tokenPayload?.email);
     const result = offers.map((offer) => fillRdo(ShortOfferRdo, offer));
 
     this.ok(res, result);

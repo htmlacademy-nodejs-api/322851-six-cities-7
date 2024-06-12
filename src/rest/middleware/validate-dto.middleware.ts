@@ -14,8 +14,8 @@ export class ValidateDtoMiddleware implements Middleware {
     const errors = await validate(dtoInstance);
     if (errors.length > 0) {
       res.status(StatusCodes.BAD_REQUEST).send(errors);
+    } else {
+      return next();
     }
-
-    next();
   }
 }

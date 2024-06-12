@@ -1,6 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Type } from 'class-transformer';
 import { ShortOfferRdo } from './short-offer.rdo.js';
-import { User } from '../../../types/user.type.js';
+import { UserRdo } from '../../user/index.js';
 
 export class DetailedOfferRdo extends ShortOfferRdo {
   @Expose()
@@ -16,7 +16,8 @@ export class DetailedOfferRdo extends ShortOfferRdo {
   public maxAdults: number;
 
   @Expose()
-  public host: User;
+  @Type(() =>UserRdo)
+  public host: UserRdo;
 
   @Expose()
   public goods: string[];

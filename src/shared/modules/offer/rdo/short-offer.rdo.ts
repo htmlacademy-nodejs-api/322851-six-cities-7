@@ -1,5 +1,5 @@
-import { Expose } from 'class-transformer';
-import { City } from '../../../types/index.js';
+import { Expose, Type } from 'class-transformer';
+import { CityRdo } from '../../city/rdo/city.rdo.js';
 
 export class ShortOfferRdo {
   @Expose()
@@ -18,7 +18,8 @@ export class ShortOfferRdo {
   public isFavorite: boolean;
 
   @Expose()
-  public city: City;
+  @Type(() => CityRdo)
+  public city: CityRdo;
 
   @Expose()
   public date: string;
