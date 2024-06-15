@@ -3,14 +3,17 @@ import {
   IsBoolean,
   IsDateString,
   IsInt,
-  Length,
   Min,
   Max,
   MaxLength,
   MinLength,
   IsIn,
   IsString,
-  IsOptional} from 'class-validator';
+  IsOptional,
+  IsLatitude,
+  IsLongitude,
+  ArrayMaxSize,
+  ArrayMinSize} from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 import { PLACE_BENEFITS, PLACE_TYPES, SixCities } from '../../../const.js';
 
@@ -39,7 +42,8 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsArray({message: CreateOfferValidationMessage.images.invalidFormat})
-  @Length(6, 6, {message: CreateOfferValidationMessage.images.length})
+  @ArrayMaxSize(6, {message: CreateOfferValidationMessage.images.length})
+  @ArrayMinSize(6, {message: CreateOfferValidationMessage.images.length})
   public images?: string[];
 
   @IsOptional()
@@ -69,15 +73,16 @@ export class UpdateOfferDto {
   public price?: number;
 
   @IsOptional()
-  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue})
+  @IsArray()
+  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
   public goods?: string[];
 
   @IsOptional()
-  @IsInt({message: CreateOfferValidationMessage.intType.type})
+  @IsLatitude({message: CreateOfferValidationMessage.intType.type})
   public offerLatitude?: number;
 
   @IsOptional()
-  @IsInt({message: CreateOfferValidationMessage.intType.type})
+  @IsLongitude({message: CreateOfferValidationMessage.intType.type})
   public offerLongitude?: number;
 
   @IsOptional()

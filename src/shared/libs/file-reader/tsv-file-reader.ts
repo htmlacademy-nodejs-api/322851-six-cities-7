@@ -67,9 +67,9 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     const {longitude, latitude, zoom } = this.parseLocation(cityLatitude, cityLongitude, cityZoom);
     return {
       name: cityName,
-      cityLatitude: latitude,
-      cityLongitude: longitude,
-      cityZoom: zoom
+      latitude,
+      longitude,
+      zoom
     };
   }
 

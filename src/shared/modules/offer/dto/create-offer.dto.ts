@@ -2,14 +2,17 @@ import {
   IsArray,
   IsBoolean,
   IsDateString,
-  IsInt, IsMongoId,
-  Length,
+  IsInt,
   Min,
   Max,
   MaxLength,
   MinLength,
   IsIn,
-  IsString } from 'class-validator';
+  IsString,
+  ArrayMaxSize,
+  ArrayMinSize,
+  IsLongitude,
+  IsLatitude} from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
 import { PLACE_BENEFITS, PLACE_TYPES, SixCities } from '../../../const.js';
 
@@ -32,7 +35,8 @@ export class CreateOfferDto {
   public previewImage: string;
 
   @IsArray({message: CreateOfferValidationMessage.images.invalidFormat})
-  @Length(6, 6, {message: CreateOfferValidationMessage.images.length})
+  @ArrayMinSize(6, {message: CreateOfferValidationMessage.images.length})
+  @ArrayMaxSize(6, {message: CreateOfferValidationMessage.images.length})
   public images: string[];
 
   @IsBoolean({message: CreateOfferValidationMessage.isPremium.type})
@@ -48,7 +52,6 @@ export class CreateOfferDto {
   @Max(10, {message: CreateOfferValidationMessage.maxAdults.length})
   public maxAdults: number;
 
-  @IsMongoId({message: CreateOfferValidationMessage.host.invalidId})
   public host?: string;
 
   @IsIn(PLACE_TYPES, {message: CreateOfferValidationMessage.type.wrongValue})
@@ -59,13 +62,14 @@ export class CreateOfferDto {
   @Max(100000, {message: CreateOfferValidationMessage.price.value})
   public price: number;
 
-  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue})
+  @IsArray()
+  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
   public goods: string[];
 
-  @IsInt({message: CreateOfferValidationMessage.intType.type})
+  @IsLatitude({message: CreateOfferValidationMessage.intType.type})
   public offerLatitude: number;
 
-  @IsInt({message: CreateOfferValidationMessage.intType.type})
+  @IsLongitude({message: CreateOfferValidationMessage.intType.type})
   public offerLongitude: number;
 
   @IsInt({message: CreateOfferValidationMessage.intType.type})

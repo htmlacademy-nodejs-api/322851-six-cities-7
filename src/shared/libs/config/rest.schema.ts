@@ -11,7 +11,8 @@ export type RestSchema = {
   DB_PASSWORD: string ,
   DB_PORT: string,
   DB_NAME: string,
-  UPLOAD_DIRECTORY: string
+  UPLOAD_DIRECTORY: string,
+  JWT_SECRET: string
 }
 
 export const configRestSchema = convict<RestSchema>({
@@ -62,5 +63,12 @@ export const configRestSchema = convict<RestSchema>({
     format: String,
     env: 'UPLOAD_DIRECTORY',
     default: null
-  }
+  },
+  JWT_SECRET: {
+    doc: 'Secret for JSON token',
+    format: String,
+    env: 'JWT_SECRET',
+    default: null
+  },
+
 });

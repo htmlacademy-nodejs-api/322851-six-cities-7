@@ -6,22 +6,23 @@ export interface CityEntity extends defaultClasses.Base {}
 @modelOptions({
   schemaOptions: {
     collection: 'cities',
-    timestamps: true
+    timestamps: true,
+    id: true
   }
 })
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 export class CityEntity extends defaultClasses.TimeStamps implements City {
   @prop({ required: true, unique: true })
-    name: string;
+  public name: string;
 
   @prop({ required: true })
-    cityLatitude: number;
+  public latitude: number;
 
   @prop({ required: true })
-    cityLongitude: number;
+  public longitude: number;
 
   @prop({ required: true })
-    cityZoom: number;
+  public zoom: number;
 }
 
 export const CityModel = getModelForClass(CityEntity);

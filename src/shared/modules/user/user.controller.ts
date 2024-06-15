@@ -2,10 +2,17 @@ import { injectable, inject } from 'inversify';
 import { BaseController, DocumentExistsMiddleware, HttpError, HttpMethod, UploadFileMiddleware } from '../../../rest/index.js';
 import { Component } from '../../types/index.js';
 import { Config, Logger, RestSchema } from '../../libs/index.js';
-import { NextFunction, Response, Request } from 'express';
-import { CreateUserRequest, UserService, UserRdo } from './index.js';
+import { Response, Request } from 'express';
+import {
+  CreateUserRequest,
+  UserService,
+  UserRdo,
+  LoggedUserRdo,
+  LoginUserRequest } from './index.js';
 import { StatusCodes } from 'http-status-codes';
 import { fillRdo } from '../../helpers/common.js';
+import { AuthService } from '../auth/auth-service.interface.js';
+import { PrivateRouteMiddleware } from '../../../rest/middleware/private-route.middleware.js';
 
 @injectable()
 export class UserController extends BaseController {
@@ -13,7 +20,8 @@ export class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.Config) private readonly config: Config<RestSchema>
+    @inject(Component.Config) private readonly config: Config<RestSchema>,
+    @inject(Component.AuthService) private readonly authService: AuthService
   ) {
     super(logger);
     this.logger.info('Register routes for user controller ...');
@@ -21,12 +29,12 @@ export class UserController extends BaseController {
     this.addRoute({path: '/register', method: HttpMethod.POST, handler: this.create});
     this.addRoute({path: '/auth', method: HttpMethod.GET, handler: this.auth});
     this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login});
-    this.addRoute({path: '/logout', method: HttpMethod.POST, handler: this.logout});
     this.addRoute({
       path: '/user/:userId/avatar',
       method: HttpMethod.POST,
       handler: this.uploadAvatar,
       middlewares: [
+        new PrivateRouteMiddleware(),
         new DocumentExistsMiddleware(this.userService, 'userId', 'User'),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
       ]
@@ -55,48 +63,32 @@ export class UserController extends BaseController {
 
 
   public async auth(
-    _req: CreateUserRequest,
-    _res: Response,
-    _next: NextFunction
-  ): Promise<void> {
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
-  }
-
-  public async login(
     req: CreateUserRequest,
-    _res: Response
+    res: Response
   ): Promise<void> {
-    const user = await this.userService.findByEmail(req.body.email);
+
+    const user = await this.userService.findByEmail(req.tokenPayload.email);
 
     if (!user) {
       throw new HttpError(
         StatusCodes.UNAUTHORIZED,
-        `User with email ${req.body.email} not found`,
+        'Unauthorized',
         'UserController'
       );
     }
 
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
+    this.ok(res, fillRdo(LoggedUserRdo, user));
   }
 
-  public async logout(
-    _req: CreateUserRequest,
-    _res: Response
+  public async login(
+    req: LoginUserRequest,
+    res: Response
   ): Promise<void> {
+    const user = await this.authService.verify(req.body);
+    const token = await this.authService.authenticate(user);
+    const responseData = fillRdo(LoggedUserRdo, user);
 
-    throw new HttpError(
-      StatusCodes.NOT_IMPLEMENTED,
-      'Not implemented',
-      'UserController'
-    );
+    this.ok(res, fillRdo(LoggedUserRdo, {...responseData, token}));
   }
 
   public async uploadAvatar(
