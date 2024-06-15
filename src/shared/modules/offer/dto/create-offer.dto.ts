@@ -8,13 +8,14 @@ import {
   MaxLength,
   MinLength,
   IsIn,
-  IsString,
-  ArrayMaxSize,
-  ArrayMinSize,
   IsLongitude,
-  IsLatitude} from 'class-validator';
+  IsLatitude,
+  ArrayMinSize,
+  ArrayMaxSize,
+  IsString,
+  IsOptional} from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
-import { PLACE_BENEFITS, PLACE_TYPES, SixCities } from '../../../const.js';
+import { OFFER_GOODS, OFFER_TYPES, SixCities } from '../../../const.js';
 
 export class CreateOfferDto {
   @MinLength(10, {message: CreateOfferValidationMessage.title.minLength})
@@ -31,14 +32,6 @@ export class CreateOfferDto {
   @IsIn(Object.values(SixCities).map((city) => city.name), {message: CreateOfferValidationMessage.city.invalidValue})
   public city: string;
 
-  @IsString({message: CreateOfferValidationMessage.stringType.type})
-  public previewImage: string;
-
-  @IsArray({message: CreateOfferValidationMessage.images.invalidFormat})
-  @ArrayMinSize(6, {message: CreateOfferValidationMessage.images.length})
-  @ArrayMaxSize(6, {message: CreateOfferValidationMessage.images.length})
-  public images: string[];
-
   @IsBoolean({message: CreateOfferValidationMessage.isPremium.type})
   public isPremium: boolean;
 
@@ -54,7 +47,7 @@ export class CreateOfferDto {
 
   public host?: string;
 
-  @IsIn(PLACE_TYPES, {message: CreateOfferValidationMessage.type.wrongValue})
+  @IsIn(OFFER_TYPES, {message: CreateOfferValidationMessage.type.wrongValue})
   public type: string;
 
   @IsInt({message: CreateOfferValidationMessage.intType.type})
@@ -63,7 +56,7 @@ export class CreateOfferDto {
   public price: number;
 
   @IsArray()
-  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
+  @IsIn(OFFER_GOODS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
   public goods: string[];
 
   @IsLatitude({message: CreateOfferValidationMessage.intType.type})
@@ -72,6 +65,17 @@ export class CreateOfferDto {
   @IsLongitude({message: CreateOfferValidationMessage.intType.type})
   public offerLongitude: number;
 
+  @IsOptional()
   @IsInt({message: CreateOfferValidationMessage.intType.type})
   public offerZoom: number;
+
+  @IsOptional()
+  @IsArray({message: CreateOfferValidationMessage.images.invalidFormat})
+  @ArrayMaxSize(6, {message: CreateOfferValidationMessage.images.length})
+  @ArrayMinSize(6, {message: CreateOfferValidationMessage.images.length})
+  public images: string[];
+
+  @IsOptional()
+  @IsString({message: CreateOfferValidationMessage.stringType.type})
+  public previewImage: string;
 }

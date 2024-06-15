@@ -85,13 +85,12 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return status === 'true';
   }
 
-  private parseUser(name: string, password: string, email: string, isPro:string, avatar: string): User {
+  private parseUser(name: string, password: string, email: string, isPro:string, _avatar: string): User {
     return {
       name,
       password: password,
       email,
-      isPro: this.parseBoolean(isPro),
-      avatar: avatar ?? null
+      isPro: this.parseBoolean(isPro)
     };
   }
 

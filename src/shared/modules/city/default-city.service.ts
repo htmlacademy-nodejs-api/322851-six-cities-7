@@ -34,6 +34,7 @@ export class DefaultCityService implements CityService {
       city = await this.create(dto);
     }
 
+    this.logger.info(`City ${dto.name} already exist`);
     return city;
   }
 }

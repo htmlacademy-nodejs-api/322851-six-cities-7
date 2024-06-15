@@ -3,6 +3,7 @@ import { CreateUserDto, UserService, UserEntity } from './index.js';
 import { inject, injectable } from 'inversify';
 import { Component } from '../../types/component.enum.js';
 import { Logger } from '../../libs/index.js';
+import { Setting } from '../../const.js';
 
 @injectable()
 export class DefaultUserService implements UserService {
@@ -13,7 +14,7 @@ export class DefaultUserService implements UserService {
   ) {}
 
   public async create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>> {
-    const user = new UserEntity(dto);
+    const user = new UserEntity({...dto, avatar: Setting.DEFAULT_AVATAR_FILE_NAME});
     user.setPassword(dto.password, salt);
     const result = this.userModel.create(user);
     this.logger.info(`New user created:  ${user.email}`);
@@ -50,5 +51,9 @@ export class DefaultUserService implements UserService {
 
   public async deleteFromFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null> {
     return this.userModel.findByIdAndUpdate(userId, {$pull: {favorites: offerId}}).exec();
+  }
+
+  public async addAvatar(email: string, avatar: string): Promise<DocumentType<UserEntity> | null> {
+    return this.userModel.findOneAndUpdate({email}, {avatar}).exec();
   }
 }

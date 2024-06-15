@@ -15,7 +15,7 @@ import {
   ArrayMaxSize,
   ArrayMinSize} from 'class-validator';
 import { CreateOfferValidationMessage } from './create-offer.messages.js';
-import { PLACE_BENEFITS, PLACE_TYPES, SixCities } from '../../../const.js';
+import { OFFER_GOODS, OFFER_TYPES, SixCities } from '../../../const.js';
 
 export class UpdateOfferDto {
   @IsOptional()
@@ -63,7 +63,7 @@ export class UpdateOfferDto {
   public maxAdults?: number;
 
   @IsOptional()
-  @IsIn(PLACE_TYPES, {message: CreateOfferValidationMessage.type.wrongValue})
+  @IsIn(OFFER_TYPES, {message: CreateOfferValidationMessage.type.wrongValue})
   public type?: string;
 
   @IsOptional()
@@ -74,7 +74,7 @@ export class UpdateOfferDto {
 
   @IsOptional()
   @IsArray()
-  @IsIn(PLACE_BENEFITS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
+  @IsIn(OFFER_GOODS, {message: CreateOfferValidationMessage.goods.wrongValue, each: true})
   public goods?: string[];
 
   @IsOptional()
