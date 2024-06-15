@@ -7,7 +7,7 @@ import * as crypto from 'node:crypto';
 export class UploadFileMiddleware implements Middleware {
   constructor(
     private readonly uploadDirectory: string,
-    private readonly fieldName: string
+    private readonly fields: {name: string, maxCount: number}[]
   ) {}
 
   public async execute(req: Request, res: Response, next: NextFunction): Promise<void> {
@@ -20,7 +20,7 @@ export class UploadFileMiddleware implements Middleware {
       }
     });
 
-    const uploadSingleFileMiddleware = multer({ storage }).single(this.fieldName);
+    const uploadSingleFileMiddleware = multer({ storage }).fields(this.fields);
 
     uploadSingleFileMiddleware(req,res,next);
   }

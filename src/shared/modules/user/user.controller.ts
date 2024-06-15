@@ -20,25 +20,34 @@ export class UserController extends BaseController {
   constructor(
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.UserService) private readonly userService: UserService,
-    @inject(Component.Config) private readonly config: Config<RestSchema>,
+    @inject(Component.Config) protected readonly config: Config<RestSchema>,
     @inject(Component.AuthService) private readonly authService: AuthService
   ) {
-    super(logger);
+    super(logger, config);
     this.logger.info('Register routes for user controller ...');
 
     this.addRoute({path: '/register', method: HttpMethod.POST, handler: this.create});
-    this.addRoute({path: '/auth', method: HttpMethod.GET, handler: this.auth});
+    this.addRoute({path: '/login', method: HttpMethod.GET, handler: this.auth});
     this.addRoute({path: '/login', method: HttpMethod.POST, handler: this.login});
     this.addRoute({
-      path: '/user/:userId/avatar',
+      path: '/:email/avatar',
       method: HttpMethod.POST,
       handler: this.uploadAvatar,
       middlewares: [
         new PrivateRouteMiddleware(),
-        new DocumentExistsMiddleware(this.userService, 'userId', 'User'),
-        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), 'avatar')
+        new DocumentExistsMiddleware(this.userService, 'email', 'User'),
+        new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), [{name: 'avatar', maxCount: 1}])
       ]
 
+    });
+
+    this.addRoute({
+      path: '/logout',
+      method: HttpMethod.DELETE,
+      handler: this.logout,
+      middlewares: [
+        new PrivateRouteMiddleware()
+      ]
     });
   }
 
@@ -95,8 +104,19 @@ export class UserController extends BaseController {
     req: Request,
     res: Response
   ) : Promise<void> {
-    this.created(res, req.file?.path);
+    if (req.files) {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      this.logger.warning(`${files.avatar[0].filename}`);
+      await this.userService.addAvatar(req.params.email, files.avatar[0].filename);
+      this.created(res, files.avatar[0].path);
+    }
+
   }
 
-
+  public logout(
+    _req: Request,
+    res: Response
+  ): void {
+    this.noContent(res, {});
+  }
 }

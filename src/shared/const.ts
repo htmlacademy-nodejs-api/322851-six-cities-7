@@ -42,14 +42,8 @@ const SixCities = {
   }
 } as const;
 
-const PLACE_TYPES = ['apartment', 'house', 'room', 'hotel'];
-const PLACE_BENEFITS = [
-  'Breakfast',
-  'Air conditioning',
-  'Laptop friendly workspace',
-  'Baby seat', 'Washer',
-  'Towels',
-  'Fridge'];
+const UPLOAD_ROUTE = '/upload';
+const STATIC_ROUTE = '/static';
 
 const Setting = {
   MAXPRICE: 100000,
@@ -61,10 +55,12 @@ const Setting = {
   MAXRAITING: 5,
   MINRAITING: 1,
   OFFER_IMAGES_COUNT: 6,
-  MAX_COMMENTS_VALUE: 50,
+  MAX_COMMENTS_COUNT: 50,
+  MAX_OFFERS_COUNT: 50,
   OFFER_LOCATION_ZOOM: 16,
   PREMIUM_OFFERS_COUNT: 3,
-  CHUNK_SIZE: 16384
+  CHUNK_SIZE: 16384,
+  DEFAULT_AVATAR_FILE_NAME: 'default-avatar.jpg'
 } as const;
 
 enum DatabaseSetting {
@@ -75,6 +71,24 @@ enum DatabaseSetting {
 
 const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'];
 const OFFER_GOODS = ['Breakfast, Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'];
+
+const DEFAULT_STATIC_IMAGES = [
+  Setting.DEFAULT_AVATAR_FILE_NAME,
+  'default-image-01.jpg',
+  'default-image-02.jpg',
+  'default-image-03.jpg',
+  'default-image-04.jpg',
+  'default-image-05.jpg',
+  'default-image-06.jpg',
+  'default-preview.jpg'
+];
+
+const STATIC_RESOURCE_FIELDS = [
+  'avatar',
+  'images',
+  'previewImage'
+];
+
 
 enum JWTtSetting {
   JWT_ALGORYTHM = 'HS256',
@@ -87,7 +101,9 @@ export {
   OFFER_GOODS,
   Setting,
   DatabaseSetting,
-  PLACE_TYPES,
-  PLACE_BENEFITS,
-  JWTtSetting
+  JWTtSetting,
+  STATIC_ROUTE,
+  UPLOAD_ROUTE,
+  DEFAULT_STATIC_IMAGES,
+  STATIC_RESOURCE_FIELDS
 };

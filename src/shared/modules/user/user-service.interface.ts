@@ -5,6 +5,7 @@ import { DocumentType } from '@typegoose/typegoose';
 export interface UserService extends DocumentExists {
   create(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>;
   findById(id:string): Promise<DocumentType<UserEntity> | null>,
+  addAvatar(id:string, avatar: string): Promise<DocumentType<UserEntity> | null>,
   findByEmail(email:string): Promise<DocumentType<UserEntity> | null>,
   findOrCreate(dto: CreateUserDto, salt: string): Promise<DocumentType<UserEntity>>,
   addToFavorites(userId: string, offerId: string): Promise<DocumentType<UserEntity> | null>,

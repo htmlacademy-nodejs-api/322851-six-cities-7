@@ -4,11 +4,10 @@ import { inject, injectable } from 'inversify';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/index.js';
 import { Types } from 'mongoose';
+import { Setting } from '../../const.js';
 
 @injectable()
 export class DefaultOfferService implements OfferService {
-  private DEFAULT_OFFERS_COUNT = 60;
-  private DEFAULT_PREMIUM_OFFERS_COUNT = 3;
 
   constructor(
     @inject(Component.Logger) private readonly logger: Logger,
@@ -26,8 +25,7 @@ export class DefaultOfferService implements OfferService {
     return Boolean(offer);
   }
 
-  public async find(email: string, count?: number,): Promise<DocumentType<OfferEntity>[]> {
-    const limit = count ?? this.DEFAULT_OFFERS_COUNT;
+  public async find(email: string, count: number,): Promise<DocumentType<OfferEntity>[]> {
     const offer = await this.offerModel
       .aggregate([
         {
@@ -86,7 +84,7 @@ export class DefaultOfferService implements OfferService {
         }
       ])
       .sort({ createdAt: -1 })
-      .limit(limit)
+      .limit(count)
       .lookup({
         from: 'cities',
         localField: 'city',
@@ -126,7 +124,7 @@ export class DefaultOfferService implements OfferService {
   }
 
   public async findPremiumOffers(city: string, count: number, email: string): Promise<DocumentType<OfferEntity>[]> {
-    const limit = count ?? this.DEFAULT_PREMIUM_OFFERS_COUNT;
+    const limit = count ?? Setting.PREMIUM_OFFERS_COUNT;
 
     return this.offerModel.aggregate([
       {

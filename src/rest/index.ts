@@ -14,3 +14,8 @@ export { ValidateObjectIdMiddleware } from './middleware/validate-objectid.middl
 export { DocumentExistsMiddleware } from './middleware/document-exists.middleware.js';
 export { ValidateDtoMiddleware } from './middleware/validate-dto.middleware.js';
 export { UploadFileMiddleware } from './middleware/upload-file.middleware.js';
+export { ValidationErrorField } from './types/validation-error-field.type.js';
+export { ValidationError } from './errors/validation-error.js';
+export { ApplicationError } from './types/application-error.enum.js';
+export { HttpExceptionFilter } from './exception-filter/http-exception-filter.js';
+export { ValidationExceptionFilter } from './exception-filter/validation-exception-filter.js';

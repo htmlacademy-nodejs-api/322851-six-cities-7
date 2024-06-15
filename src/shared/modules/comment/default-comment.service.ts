@@ -3,6 +3,7 @@ import { CommentEntity, CommentService, CreateCommentDto } from './index.js';
 import { inject, injectable } from 'inversify';
 import { Component } from '../../types/index.js';
 import { Logger } from '../../libs/index.js';
+import { Setting } from '../../const.js';
 
 @injectable()
 export class DefaultCommentService implements CommentService {
@@ -28,6 +29,6 @@ export class DefaultCommentService implements CommentService {
   }
 
   public async findByOfferId(offerId: string): Promise<DocumentType<CommentEntity>[]> {
-    return this.commentModel.find({offerId: offerId}).populate('offerId').exec();
+    return this.commentModel.find({offerId: offerId}).limit(Setting.MAX_COMMENTS_COUNT).populate('offerId').exec();
   }
 }

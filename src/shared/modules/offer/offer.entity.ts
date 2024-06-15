@@ -9,7 +9,6 @@ import { UserEntity } from '../user/index.js';
   }
 })
 export class OfferEntity extends defaultClasses.TimeStamps {
-
   @prop({required: true, trim: true})
   public title: string;
 
@@ -61,7 +60,7 @@ export class OfferEntity extends defaultClasses.TimeStamps {
   @prop({required: true})
   public offerLatitude: number;
 
-  @prop({required: true})
+  @prop({required: true, default: 8})
   public offerZoom: number;
 
   @prop({required: true, default: 0})

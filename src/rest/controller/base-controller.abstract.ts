@@ -1,9 +1,11 @@
-import { injectable } from 'inversify';
 import { Controller, Route } from '../index.js';
 import { Response, Router } from 'express';
-import { Logger } from '../../shared/libs/index.js';
+import { Config, Logger, RestSchema } from '../../shared/libs/index.js';
 import { StatusCodes } from 'http-status-codes';
 import asyncHandler from 'express-async-handler';
+import { getFullServerPath } from '../../shared/helpers/common.js';
+import { transformPath } from '../../shared/helpers/path-transformer.js';
+import { injectable } from 'inversify';
 
 @injectable()
 export abstract class BaseController implements Controller {
@@ -11,7 +13,8 @@ export abstract class BaseController implements Controller {
   private readonly _router: Router;
 
   constructor(
-    protected readonly logger: Logger
+    protected readonly logger: Logger,
+    protected readonly config: Config<RestSchema>
   ) {
     this._router = Router();
   }
@@ -29,32 +32,25 @@ export abstract class BaseController implements Controller {
   }
 
   public send<T>(res: Response, statusCode: number, data: T): void {
+    const serverPath = getFullServerPath(this.config.get('HOST'), this.config.get('PORT'));
+    const modifiedData = transformPath(data as Record<string, unknown>, serverPath);
     res
       .type(this.DEFAULT_CONTENT_TYPE)
       .status(statusCode)
-      .json(data);
+      .json(modifiedData);
 
   }
 
   public created<T>(res: Response, data: T): void {
-    res
-      .type(this.DEFAULT_CONTENT_TYPE)
-      .status(StatusCodes.CREATED)
-      .json(data);
+    this.send(res,StatusCodes.CREATED, data);
   }
 
   public ok<T>(res: Response, data: T): void {
-    res
-      .type(this.DEFAULT_CONTENT_TYPE)
-      .status(StatusCodes.OK)
-      .json(data);
+    this.send(res, StatusCodes.OK, data);
   }
 
   public noContent<T>(res: Response, data?: T): void {
-    res
-      .type(this.DEFAULT_CONTENT_TYPE)
-      .status(StatusCodes.NO_CONTENT)
-      .json(data);
+    this.send(res, StatusCodes.NO_CONTENT, data);
   }
 
 }

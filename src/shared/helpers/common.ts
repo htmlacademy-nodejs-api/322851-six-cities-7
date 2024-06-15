@@ -1,4 +1,6 @@
 import { ClassConstructor, plainToInstance } from 'class-transformer';
+import { ValidationError } from 'class-validator';
+import { ApplicationError, ValidationErrorField } from '../../rest/index.js';
 
 const getRandomInteger = (a: number, b: number) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -39,9 +41,17 @@ const getRandomSubArray = <T>(arr: T[], count?: number) => {
 
 const getErrorMessage = (error: unknown) => (error instanceof Error) ? error.message : '';
 
-const createErrorObject = (message: string) => ({error: message});
+const createErrorObject = (errorType: ApplicationError, error: string, details?: ValidationErrorField[]) => ({errorType, error, details});
 
 const fillRdo = <T, V>(someDto: ClassConstructor<T>, plainObject: V) => plainToInstance(someDto, plainObject, {excludeExtraneousValues: true});
+
+const reduceValidationErrors = (errors: ValidationError[]) => errors.map(({property, value, constraints}) => ({
+  property,
+  value,
+  messages: constraints ? Object.values(constraints) : []
+}));
+
+const getFullServerPath = (host: string, port: number) => `http://${host}:${port}`;
 
 export {
   getRandomInteger,
@@ -49,5 +59,7 @@ export {
   getRanndomElement,
   getErrorMessage,
   createErrorObject,
-  fillRdo
+  fillRdo,
+  reduceValidationErrors,
+  getFullServerPath
 };

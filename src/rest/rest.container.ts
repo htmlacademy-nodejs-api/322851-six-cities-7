@@ -10,6 +10,7 @@ import {
   RestConfig,
   RestSchema
 } from '../shared/libs/index.js';
+import { HttpExceptionFilter, ValidationExceptionFilter } from './index.js';
 
 export function createRestApplicationContainer() {
   const restApplicationContainer = new Container();
@@ -19,6 +20,9 @@ export function createRestApplicationContainer() {
   restApplicationContainer.bind<Config<RestSchema>>(Component.Config).to(RestConfig).inSingletonScope();
   restApplicationContainer.bind<DatabaseClient>(Component.DatabaseClient).to(MongoDatabaseClient).inSingletonScope();
   restApplicationContainer.bind<ExceptionFilter>(Component.ExceptionFilter).to(AppExceptionFilter).inSingletonScope();
+  restApplicationContainer.bind<ExceptionFilter>(Component.HttpExceptionFilter).to(HttpExceptionFilter).inSingletonScope();
+  restApplicationContainer.bind<ExceptionFilter>(Component.ValidationExceptionFilter).to(ValidationExceptionFilter).inSingletonScope();
+
 
   return restApplicationContainer;
 }

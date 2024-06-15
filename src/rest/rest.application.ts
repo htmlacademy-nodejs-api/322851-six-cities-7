@@ -3,8 +3,12 @@ import { injectable, inject } from 'inversify';
 import { Component } from '../shared/types/index.js';
 import { getMongoURI } from '../shared/helpers/database.js';
 import express, { Express } from 'express';
+import cors from 'cors';
 import { Controller, ExceptionFilter } from './index.js';
 import { ParseTokenMiddleware } from './middleware/parse-token.middleware.js';
+import { getFullServerPath } from '../shared/helpers/common.js';
+import { STATIC_ROUTE, UPLOAD_ROUTE } from '../shared/const.js';
+import { CityController } from '../shared/modules/city/city.controller.js';
 
 
 @injectable()
@@ -20,7 +24,9 @@ export class RestApplication {
     @inject(Component.OfferController) private readonly offerController: Controller,
     @inject(Component.CommentController) private readonly commentController: Controller,
     @inject(Component.AuthExceptionFilter) private readonly authExceptionFilter: ExceptionFilter,
-    @inject(Component.CityController) private readonly cityController: Controller
+    @inject(Component.HttpExceptionFilter) private readonly httpExceptionFilter: ExceptionFilter,
+    @inject(Component.ValidationExceptionFilter) private readonly validationExceptionFilter: ExceptionFilter,
+    @inject(Component.CityController) private readonly cityController: CityController
   ) {
     this.server = express();
   }
@@ -46,17 +52,20 @@ export class RestApplication {
     const authenticateMiddleware = new ParseTokenMiddleware(this.config.get('JWT_SECRET'));
 
     this.server.use(express.json());
-    this.server.use('/upload', express.static(this.config.get('UPLOAD_DIRECTORY')));
+    this.server.use(cors());
+    this.server.use(STATIC_ROUTE, express.static(this.config.get('STATIC_PATH')));
+    this.server.use(UPLOAD_ROUTE, express.static(this.config.get('UPLOAD_DIRECTORY')));
     this.server.use(authenticateMiddleware.execute.bind(authenticateMiddleware));
   }
 
   private async initExceptionFilters() {
     this.server.use(this.authExceptionFilter.catch.bind(this.authExceptionFilter));
+    this.server.use(this.validationExceptionFilter.catch.bind(this.validationExceptionFilter));
+    this.server.use(this.httpExceptionFilter.catch.bind(this.httpExceptionFilter));
     this.server.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
   }
 
   private async initControllers() {
-    this.server.use('/', this.cityController.router);
     this.server.use('/', this.userController.router);
     this.server.use('/', this.offerController.router);
     this.server.use('/', this.commentController.router);
@@ -84,6 +93,8 @@ export class RestApplication {
 
     this.logger.info('Try to init server ...');
     await this.initServer();
-    this.logger.info(`Server started on http:localhost:${this.config.get('PORT')}`);
+    this.logger.info(`Server started on ${getFullServerPath(this.config.get('HOST'), this.config.get('PORT'))}`);
+
+    this.cityController.create();
   }
 }

@@ -38,9 +38,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/newUser'
 
-        '409':
+        '400':
           description: Пользователь с таким email уже существует.
 
   /login:
@@ -100,7 +100,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/user'
+                $ref: '#/components/schemas/newUser'
 
         '401':
           description: Ошибка авторизации пользователя
@@ -127,6 +127,37 @@ paths:
         '204':
           description: Сеанс завершён
 
+  /{email}/avatar:
+    post:
+      tags:
+        - users
+      summary: Загрузка аватара
+      description: Осуществляет загрузку аватара для существующего пользователя.
+
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'email'
+          in: path
+          schema:
+            $ref: '#/components/schemas/email'
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/files'
+
+      responses:
+        '201':
+          description: Аватар добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/avatarPath'
 
   /comments/{offerId}:
     get:
@@ -221,7 +252,13 @@ paths:
           name: Токен пользователя
           schema:
             $ref: '#/components/schemas/token'
-          required: true
+          required: false
+        - in: query
+          name: 'count'
+          description: Запрашиваемое количество предложений по аренде
+          schema:
+            $ref: '#/components/schemas/count'
+          required: false
 
       responses:
         '200':
@@ -287,7 +324,7 @@ paths:
           name: Токен пользователя
           schema:
             $ref: '#/components/schemas/token'
-          required: true
+          required: false
         - name: 'offerId'
           in: path
           schema:
@@ -483,6 +520,70 @@ paths:
                 schema:
                   $ref: '#/components/schemas/offerNotFoundError'
 
+  /offers/{offerId}/preview:
+    post:
+      tags:
+        - offers
+      summary: Загрузка превью для оффера
+      description: Осуществляет загрузку превью для офеера по offerId.
+
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'offerId'
+          in: path
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/files'
+
+      responses:
+        '201':
+          description: Аватар добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/avatarPath'
+
+  /offers/{offerId}/images:
+    post:
+      tags:
+        - offers
+      summary: Загрузка списка изображений для оффера
+      description: Осуществляет загрузку списка изображений для офеера по offerId.
+
+      parameters:
+        - in: header
+          name: Токен пользователя
+          schema:
+            $ref: '#/components/schemas/token'
+          required: true
+        - name: 'offerId'
+          in: path
+          schema:
+            $ref: '#/components/schemas/offerId'
+          required: true
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/files'
+
+      responses:
+        '201':
+          description: Аватар добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/avatarPath'
+
   /premiumOffers/{cityName}:
     get:
         tags:
@@ -523,7 +624,7 @@ components:
       type: object
 
       properties:
-        login:
+        name:
           type: string
           example: Max
 
@@ -534,6 +635,10 @@ components:
         password:
           type: string
           example: qwerty
+
+        isPro:
+          type: boolean
+          example: true
 
     authUser:
       type: object
@@ -567,6 +672,26 @@ components:
           type: string
           example: fFGfj34lfjkj635735=
 
+    newUser:
+      type: object
+
+      properties:
+        name:
+          type: string
+          example: Max
+
+        email:
+          type: string
+          example: max@mail.ru
+
+        avatar:
+          type: string
+          example: 'https://url-to-image/image.png'
+
+        isPro:
+          type: boolean
+          example: true
+
     user:
       type: object
 
@@ -598,6 +723,18 @@ components:
       type: string
       example: fFGfj34lfjkj635735=
 
+    count:
+      type: number
+      example: 45
+
+    email:
+      type: string
+      example: max@mail.ru
+
+    avatarPath:
+      type: string
+      example: 'https://url-to-image/image.png'
+
     newComment:
       type: object
 
@@ -609,6 +746,10 @@ components:
           rating:
             type: number
             example: 5
+
+          date:
+            type: string
+            example: 2024-05-23T06:14:56.569Z
 
     comment:
       type: object
@@ -623,7 +764,7 @@ components:
             example: 2024-05-23T06:14:56.569Z
 
           user:
-            $ref: '#/components/schemas/user'
+            $ref: '#/components/schemas/newUser'
 
           comment:
             type: string
@@ -639,10 +780,6 @@ components:
         type: object
 
         $ref: '#/components/schemas/comment'
-
-    count:
-      type: number
-      example: 55
 
     newOffer:
       type: object
@@ -666,30 +803,25 @@ components:
             name:
               type: string
               example: Amsterdam
-            location:
-              type: object
-              properties:
-                latitude:
-                  type: number
-                  example: 52.35514938496378
-                longitude:
-                  type: number
-                  example: 4.673877537499948
-                zoom:
-                  type: number
-                  example: 8
-        location:
-          type: object
-          properties:
-                latitude:
-                  type: number
-                  example: 52.35514938496378
-                longitude:
-                  type: number
-                  example: 4.673877537499948
-                zoom:
-                  type: number
-                  example: 8
+            latitude:
+              type: number
+              example: 52.35514938496378
+            longitude:
+              type: number
+              example: 4.673877537499948
+            zoom:
+              type: number
+              example: 8
+
+        offerLatitude:
+          type: number
+          example: 52.35514938496378
+        offerLongitude:
+          type: number
+          example: 4.673877537499948
+        offerZoom:
+          type: number
+          example: 8
         isFavorite:
           type: boolean
           example: true
@@ -716,15 +848,59 @@ components:
             type: string
             example: Heating
 
-        host:
-          $ref: '#/components/schemas/user'
-
-        images:
-          items:
-            type: string
-            example: https://url-to-image/image.png
-
         maxAdults:
+          type: number
+          example: 4
+
+    shortOffer:
+      type: object
+
+      properties:
+        title:
+          type: string
+          example: Beautiful & luxurious studio at great location'
+        type:
+          type: string
+          example: apartment
+
+        price:
+          type: number
+          example: 120
+
+        city:
+          type: object
+          properties:
+            name:
+              type: string
+              example: Amsterdam
+            latitude:
+              type: number
+              example: 52.35514938496378
+            longitude:
+              type: number
+              example: 4.673877537499948
+            zoom:
+              type: number
+              example: 8
+
+        offerLatitude:
+          type: number
+          example: 52.35514938496378
+        offerLongitude:
+            type: number
+            example: 4.673877537499948
+        offerZoom:
+          type: number
+          example: 8
+        isFavorite:
+          type: boolean
+          example: true
+
+        isPremium:
+          type: boolean
+          example: false
+
+        rating:
           type: number
           example: 4
 
@@ -738,13 +914,34 @@ components:
         id:
           type: string
           example: '6af6f711-c28d-4121-82cd-e0b462a27f00'
+        host:
+          $ref: '#/components/schemas/newUser'
 
+        images:
+          items:
+            type: string
+            example: https://url-to-image/image.png
+
+        previewImage:
+          type: string
+          example: https://url-to-image/image.png
 
     offers:
       type: array
       items:
-        $ref: '#/components/schemas/offer'
+        $ref: '#/components/schemas/shortOffer'
 
+    files:
+      type: array
+      items:
+        type: object
+        properties:
+          path:
+            type: string
+            example: 'https://url-to-image/image.png'
+          filename:
+            type: string
+            example: 'image.png'
 
     offerNotFoundError:
       type: object

@@ -1,7 +1,6 @@
 import { Logger as PinoInstance, pino, transport } from 'pino';
 import { Logger } from './logger.interface.js';
 import { injectable } from 'inversify';
-import { getErrorMessage } from '../../helpers/index.js';
 
 @injectable()
 export class PinoLogger implements Logger {
@@ -29,7 +28,7 @@ export class PinoLogger implements Logger {
   }
 
   public error(message: string, error: Error, ...args: unknown[]): void {
-    this.logger.error(getErrorMessage(error), message, ...args);
+    this.logger.error(error, message, ...args);
   }
 
   public debug(message: string, ...args: unknown[]): void {

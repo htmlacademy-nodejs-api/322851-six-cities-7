@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify';
 import { BaseController, DocumentExistsMiddleware, HttpMethod, RequestBody, ValidateObjectIdMiddleware } from '../../../rest/index.js';
 import { Component } from '../../types/component.enum.js';
-import { Logger } from '../../libs/index.js';
+import { Config, Logger, RestSchema } from '../../libs/index.js';
 import { CommentRdo, CommentService, CreateCommentDto} from './index.js';
 import { Request, Response } from 'express';
 import { fillRdo } from '../../helpers/index.js';
@@ -15,8 +15,9 @@ export class CommentController extends BaseController {
     @inject(Component.Logger) protected readonly logger: Logger,
     @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.OfferService) private readonly offerService: OfferService,
+    @inject(Component.Config) protected readonly config: Config<RestSchema>
   ) {
-    super(logger);
+    super(logger, config);
 
     this.logger.info('Register routes for comment controller');
 

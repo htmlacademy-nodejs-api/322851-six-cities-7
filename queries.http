@@ -34,7 +34,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6I
 ###
 
 #Get Offers
-get http://localhost:4000/offers HTTP/1.1
+get http://localhost:5000/offers?count=40 HTTP/1.1
 Content-Type: application/json
 
 ###
@@ -71,7 +71,7 @@ Content-Type: application/json
 #Update Offer
 PATCH http://localhost:4000/offers/66699aedb04f254779abf332 HTTP/1.1
 Content-Type: application/json
-Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJmYXZvcml0ZXMiOlsiNjY1MGY0Y2YxYjgxNDAwMzY1NzQxYjc2Il0sImlhdCI6MTcxODA2ODMwMywiZXhwIjoxNzE4MjQxMTAzfQ.cEJJFrFpi6ba7Ekk1f3XoQBSG4cK2_Z7evxAKOCdIVI
+Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMTIyNjEsImV4cCI6MTcxODM4NTA2MX0.ITMHQ_U-T_5m_DAdexgM1kKChp30PmyVcuvS99nebjI
 
 {
   "isPremium": true
@@ -100,9 +100,8 @@ Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6
 ###
 
 #Get Premiums
-GET http://localhost:4000/premiumOffers/Cologne HTTP/1.1
+GET http://localhost:5000/premium/Dusseldorf HTTP/1.1
 Content-Type: application/json
-Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6ImZlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NWJiMThkY2RkNjE4Y2IxMTY5ZjQ4ZiIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMTIyNjEsImV4cCI6MTcxODM4NTA2MX0.ITMHQ_U-T_5m_DAdexgM1kKChp30PmyVcuvS99nebjI
 
 ###
 
@@ -126,11 +125,27 @@ Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6
 
 ###
 
-POST http://localhost:4000/user/6650f4cf1b81400365741b71/avatar HTTP/1.1
+#Upload avatar
+POST http://localhost:4000/user/avatar HTTP/1.1
 Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6InBlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NjljZGVjZDk2ZjMzN2M3YjFhODEwYSIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMjc2MTAsImV4cCI6MTcxODQwMDQxMH0.8MWzjg8vBhKL978LwjzGBALrR_ogSb60Jq9YPPsrqtY
 
 ------WebKitFormBoundary7MA4YWxkTrZu0gW
 Content-Disposition: form-data; name="avatar"; filename="avatar-max.jpg"
+Content-Type: image/jpeg
+
+< H:\djangoboy\Projects\HA\avatar-max.jpg
+------WebKitFormBoundary7MA4YWxkTrZu0gW--
+
+###
+
+#Upload preview
+POST http://localhost:4000/offers/66699aedb04f254779abf332/preview HTTP/1.1
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6InBlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NjljZGVjZDk2ZjMzN2M3YjFhODEwYSIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTgyMjc2MTAsImV4cCI6MTcxODQwMDQxMH0.8MWzjg8vBhKL978LwjzGBALrR_ogSb60Jq9YPPsrqtY
+
+------WebKitFormBoundary7MA4YWxkTrZu0gW
+Content-Disposition: form-data; name="preview"; filename="avatar-max.jpg"
 Content-Type: image/jpeg
 
 < H:\djangoboy\Projects\HA\avatar-max.jpg
