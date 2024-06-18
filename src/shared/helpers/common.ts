@@ -27,7 +27,7 @@ const generateRandomIndex = (a: number, b: number) => {
 const getRanndomElement = <T>(arr: T[]) => arr[getRandomInteger(0, arr.length - 1)];
 
 const getRandomSubArray = <T>(arr: T[], count?: number) => {
-  count = (!count) ? getRandomInteger(1, arr.length - 1) : count;
+  count = count || getRandomInteger(1, arr.length - 1);
   const newArray: T[] = [];
   const indexGenerator = generateRandomIndex(0, arr.length - 1);
   for (let i = 0; i < count; i++) {

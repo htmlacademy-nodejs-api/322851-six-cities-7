@@ -8,7 +8,7 @@ export class CreateUserDto {
 
   @MinLength(6, {message: UserValidationMessage.password.minLength})
   @MaxLength(12, {message: UserValidationMessage.password.maxLength})
-  public password?: string;
+  public password: string;
 
   @MinLength(6, {message: UserValidationMessage.name.minLength})
   @MaxLength(12, {message: UserValidationMessage.name.maxLength})

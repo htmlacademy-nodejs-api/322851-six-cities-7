@@ -39,15 +39,15 @@ export class ImportCommand implements Command {
   }
 
   private async saveOffer(offer: Offer) {
-    const user = await this.userService.findOrCreate(offer.host, this.salt);
-    const city = await this.cityService.findOrCreate(offer.city);
-
+    const [user, city] = await Promise.all([
+      this.userService.findOrCreate(offer.host, this.salt),
+      this.cityService.findOrCreate(offer.city)
+    ]);
     await this.offerService.create({
       ...offer,
       city: city.id,
       host: user.id
-    }
-    );
+    });
 
   }
 

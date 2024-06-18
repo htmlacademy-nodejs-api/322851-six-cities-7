@@ -1,9 +1,10 @@
 import { FileReader } from './file-reader.interface.js';
 import { createReadStream } from 'node:fs';
-import { Offer, City, Location, User } from '../../types/index.js';
+import { Offer, City, Location } from '../../types/index.js';
 import dayjs from 'dayjs';
 import { Setting } from '../../const.js';
 import { EventEmitter } from 'node:events';
+import { CreateUserDto } from '../../modules/user/index.js';
 
 export class TSVFileReader extends EventEmitter implements FileReader {
   private chunkSize = Setting.CHUNK_SIZE;
@@ -47,7 +48,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
       title,
       description,
       city: this.parseCity(cityName, cityLatitude, cityLongitude, cityZoom),
-      date: (date) ? date : dayjs().toISOString(),
+      date: date ?? dayjs().toISOString(),
       previewImage,
       images: images.split(';'),
       isPremium: this.parseBoolean(isPremium),
@@ -85,7 +86,7 @@ export class TSVFileReader extends EventEmitter implements FileReader {
     return status === 'true';
   }
 
-  private parseUser(name: string, password: string, email: string, isPro:string, _avatar: string): User {
+  private parseUser(name: string, password: string, email: string, isPro:string, _avatar: string): CreateUserDto {
     return {
       name,
       password: password,

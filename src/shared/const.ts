@@ -91,8 +91,8 @@ const STATIC_RESOURCE_FIELDS = [
 
 
 enum JWTtSetting {
-  JWT_ALGORYTHM = 'HS256',
-  JWT_EXPIRED = '2d'
+  ALGORYTHM = 'HS256',
+  EXPIRATION_TIME = '2d'
 }
 
 export {

@@ -57,10 +57,10 @@ export class CommentController extends BaseController {
     res: Response
   ) {
     const user = req.tokenPayload;
-    const newComment = await this.commentService.create({...req.body, offerId: req.params.offerId ,user: user.id});
-    await this.offerService.incCommentCount(req.params.offerId);
-    await this.offerService.changeRating(req.params.offerId, newComment.rating);
-
+    const [newComment,] = await Promise.all([
+      this.commentService.create({...req.body, offerId: req.params.offerId ,user: user.id}),
+      this.offerService.changeRating(req.params.offerId, req.body.rating)
+    ]);
 
     this.created(res, fillRdo(CommentRdo, newComment));
   }

@@ -1,5 +1,5 @@
-import { User } from './user.type.js';
 import { City } from './city.type.js';
+import { CreateUserDto } from '../modules/user/index.js';
 
 export type Offer = {
   title: string;
@@ -16,7 +16,7 @@ export type Offer = {
   maxAdults: number;
   price: number;
   goods: string[];
-  host: User;
+  host: CreateUserDto;
   comments?: number;
   offerLatitude: number;
   offerLongitude: number;

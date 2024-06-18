@@ -10,6 +10,7 @@ export class ValidateObjectIdMiddleware implements Middleware {
 
   execute({ params }: Request, _res: Response, next: NextFunction): void {
     const objectId = params[this.param];
+    console.log(objectId);
 
     if (Types.ObjectId.isValid(objectId)) {
       return next();

@@ -8,7 +8,8 @@ import {
   ValidateObjectIdMiddleware,
   ValidateDtoMiddleware,
   DocumentExistsMiddleware,
-  UploadFileMiddleware} from '../../../rest/index.js';
+  UploadFileMiddleware,
+  ValidateAuthorMiddleware} from '../../../rest/index.js';
 import { Component } from '../../types/component.enum.js';
 import { Config, Logger, RestSchema } from '../../libs/index.js';
 import { fillRdo } from '../../helpers/common.js';
@@ -19,6 +20,8 @@ import { CityService } from '../city/city-service.interface.js';
 import { UserService } from '../user/user-service.interface.js';
 import { PrivateRouteMiddleware } from '../../../rest/middleware/private-route.middleware.js';
 import { DEFAULT_STATIC_IMAGES, Setting } from '../../const.js';
+import { UserNotFoundException } from '../auth/index.js';
+import { CommentService } from '../comment/comment-service.interface.js';
 
 @injectable()
 export class OfferController extends BaseController {
@@ -28,6 +31,7 @@ export class OfferController extends BaseController {
     @inject(Component.OfferService) private readonly offerService: OfferService,
     @inject(Component.CityService) private readonly cityService: CityService,
     @inject(Component.UserService) private readonly userService: UserService,
+    @inject(Component.CommentService) private readonly commentService: CommentService,
     @inject(Component.Config) protected readonly config: Config<RestSchema>
   ) {
     super(logger, config);
@@ -62,7 +66,8 @@ export class OfferController extends BaseController {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new ValidateDtoMiddleware(UpdateOfferDto),
-        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer'),
+        new ValidateAuthorMiddleware(this.offerService)
       ]
     });
 
@@ -73,7 +78,8 @@ export class OfferController extends BaseController {
       middlewares: [
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
-        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer')
+        new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer'),
+        new ValidateAuthorMiddleware(this.offerService)
       ]
     });
 
@@ -104,6 +110,7 @@ export class OfferController extends BaseController {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer'),
+        new ValidateAuthorMiddleware(this.offerService),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), [{name: 'image', maxCount: 6}])
       ]
@@ -117,6 +124,7 @@ export class OfferController extends BaseController {
         new PrivateRouteMiddleware(),
         new ValidateObjectIdMiddleware('offerId'),
         new DocumentExistsMiddleware(this.offerService, 'offerId', 'Offer'),
+        new ValidateAuthorMiddleware(this.offerService),
         new ValidateDtoMiddleware(UpdateOfferDto),
         new UploadFileMiddleware(this.config.get('UPLOAD_DIRECTORY'), [{name: 'preview', maxCount: 1}])
       ]
@@ -192,7 +200,10 @@ export class OfferController extends BaseController {
     res: Response
   ): Promise<void> {
 
-    await this.offerService.deleteById(req.params.offerId);
+    await Promise.all([
+      this.offerService.deleteById(req.params.offerId),
+      this.commentService.deleteByOfferId(req.params.offerId)
+    ]);
 
     this.noContent(res);
   }
@@ -203,23 +214,28 @@ export class OfferController extends BaseController {
   ) {
     const user = await this.userService.findByEmail(req.tokenPayload.email);
 
-    if (user) {
-      const offers = await this.offerService.findFavoriteOffers(user?.favorites);
-      const result = offers.map((offer) => {
-        offer.isFavorite = true;
-        return fillRdo(ShortOfferRdo, offer);
-      });
-      this.ok(res, result);
+    if (!user) {
+      throw new UserNotFoundException();
     }
+
+    const offers = await this.offerService.findFavoriteOffers(user.favorites);
+    const result = offers.map((offer) => {
+      offer.isFavorite = true;
+      return fillRdo(ShortOfferRdo, offer);
+    });
+    this.ok(res, result);
+
   }
 
   private async updateFavorites(
     req: Request<Record<string, string>, RequestBody>,
     res: Response
   ) {
-    const offer = await this.offerService.findById(req.params.offerId);
-
-    const user = await this.userService.findByEmail(req.tokenPayload.email);
+    console.log(req.params.offerId);
+    const [offer, user] = await Promise.all([
+      this.offerService.findById(req.params.offerId),
+      this.userService.findByEmail(req.tokenPayload.email)
+    ]);
 
     if (offer && user && (user.favorites.includes(offer.id) && req.params.status === '0')) {
       this.logger.warning(`Delete from favorites offer ${offer.id} by user ${user.email}`);
