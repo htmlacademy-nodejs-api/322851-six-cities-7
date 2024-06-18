@@ -109,18 +109,28 @@ export class DefaultOfferService implements OfferService {
     return this.offerModel.findByIdAndDelete(offerId).exec();
   }
 
-  public async incCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(offerId, {$inc: {comments: 1}}).exec();
-  }
-
-  public async decCommentCount(offerId: string): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(offerId, {$inc: {comments: -1}}).exec();
-  }
-
   public async changeRating(offerId: string, newRate: number): Promise<void> {
     await this.offerModel.findByIdAndUpdate(
       offerId,
-      [{$set: { rating: {$multiply: [{$add: ['$rating', newRate]}, 0.5]}}}]);
+      [{
+        $set:
+          {
+            rating: {$cond:
+                      {
+                        if: {$eq: ['$comments', 0]},
+                        then: newRate,
+                        else: {$divide: [{$add: ['$rating', newRate]}, 2]}
+                      }
+            }
+          }
+
+      },
+      {
+        $set: {
+          comments: {$add: ['$comments', 1]}
+        }
+      }
+      ]);
   }
 
   public async findPremiumOffers(city: string, count: number, email: string): Promise<DocumentType<OfferEntity>[]> {
@@ -193,18 +203,16 @@ export class DefaultOfferService implements OfferService {
       {
         $project: {test: 0}
       }
-    ]).limit(limit)
+    ]).sort({ createdAt: -1 })
+      .limit(limit)
       .lookup({
         from: 'cities',
         localField: 'city',
         foreignField: '_id',
         as: 'city'
       })
-      .unwind({path: '$city'}).exec();
-  }
-
-  public async changeFavoriteStatus(offerId: string, status: boolean): Promise<DocumentType<OfferEntity> | null> {
-    return this.offerModel.findByIdAndUpdate(offerId, {isFavorite: status}).populate(['host', 'city']).exec();
+      .unwind({path: '$city'})
+      .exec();
   }
 
   public async findFavoriteOffers(favorites: string[]): Promise<DocumentType<OfferEntity>[]> {

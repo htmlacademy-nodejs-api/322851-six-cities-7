@@ -40,7 +40,7 @@ export class RestApplication {
       this.config.get('DB_NAME')
     );
 
-    this.databaseClient.connect(mongoURI);
+    await this.databaseClient.connect(mongoURI);
   }
 
   private async initServer() {
