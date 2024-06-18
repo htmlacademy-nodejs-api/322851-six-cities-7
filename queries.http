@@ -74,7 +74,7 @@ Content-Type: application/json
 Authorization:  Bearer eyJhbGciOiJIUzI1NiJ9.eyJuYW1lIjoiVGVzdFVzZXIiLCJlbWFpbCI6InBlc3RAZXhhbXBsZS5jb20iLCJpZCI6IjY2NzFkNTU2MTgzNGExZGI0MzQxYzQ2NCIsImlzUHJvIjp0cnVlLCJpYXQiOjE3MTg3MzYyMzQsImV4cCI6MTcxODkwOTAzNH0.t2Okxf2Z_B7ifnWq0oeSFy4C_F8O6qBKiqP5NDblir4
 
 {
-  "isPremium": true
+  "maxAdults": 10
 }
 ###
 

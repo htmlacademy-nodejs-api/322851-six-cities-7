@@ -70,7 +70,7 @@ enum DatabaseSetting {
 }
 
 const OFFER_TYPES = ['apartment', 'house', 'room', 'hotel'];
-const OFFER_GOODS = ['Breakfast, Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'];
+const OFFER_GOODS = ['Breakfast', 'Air conditioning', 'Laptop friendly workspace', 'Baby seat', 'Washer', 'Towels', 'Fridge'];
 
 const DEFAULT_STATIC_IMAGES = [
   Setting.DEFAULT_AVATAR_FILE_NAME,
